@@ -1,0 +1,43 @@
+<nav>
+  <a href="/">Home</a>
+  <a href="/sign-up">Sign up</a>
+  <a href="/annotate">#annotate</a>
+</nav>
+
+<script>
+  document.onreadystatechange = () => {
+    if (document.readyState === 'complete') {
+      for (let link of document.getElementsByTagName('a')) {
+        if (link.href == document.URL) {
+          link.classList.add("active");
+        }
+      }
+    }
+  }
+</script>
+
+<style>
+  @media (prefers-color-scheme: dark) {
+    nav a:hover {
+      background-color: var(--color-dark-highlight);
+    }
+  }
+  @media (prefers-color-scheme: light) {
+    nav a:hover {
+      background-color: var(--color-light-highlight);
+    }
+  }
+  nav {
+    min-height: 48px;
+  }
+  nav a {
+    display: inline-block;
+    line-height: 48px;
+    height: 48px;
+    font-size: x-large;
+    padding: 0 1em;
+  }
+  nav a.active {
+    color: var(--color-a);
+  }
+</style>

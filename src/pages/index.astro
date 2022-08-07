@@ -1,0 +1,45 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+import screenshot from '../images/nethack-screenshot.png';
+---
+<MainLayout>
+  <section class="a">
+    <h2>What is NetHackathon?</h2>
+    <p>NetHackathon is an event where Twitch content creators stream NetHack continuously
+      for over 48 hours.</p>
+  </section>
+  <section>
+    <h2 style="margin-bottom: 0;">The Spring 2022 Event</h2>
+    <div>
+      <div style="position:relative; padding-top: 56.25%;">
+        <iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" src="https://www.youtube-nocookie.com/embed/videoseries?list=PLChC_Y8sQL22DocizsU2MRGtd7N8R5k5u&origin=https://nethackathon.org" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
+    </div>
+  </section>
+  <section style="padding: 0.5em;" aria-label="NetHack screenshot">
+    <img src={screenshot} alt="Screenshot of NetHack" style="width: 100%;" />
+  </section>
+  <section class="c">
+    <h2>What is NetHack?</h2>
+    <p>NetHack is a dungeon crawling adventure game, a direct descendent of the eponymous
+      Rogue of rogue-like, and <a href="https://www.thegreatestgameyouwilleverplay.com/">the
+        greatest game you will ever play.</a></p>
+  </section>
+  <section>
+    <h2>When is the next event?</h2>
+    <p>We run the event twice a year, in the spring and fall, the next event will be held
+      in September 2022.</p>
+  </section>
+  <section>
+    <h2>Do you play NetHack?</h2>
+    <p>Are you a Twitch Streamer? We're looking for people to play NetHack on stream, the
+      time commitment is two hours at a time of your choosing during a weekend.</p>
+    <p>To participate in future events <a href="/sign-up">sign up as a streamer today!</a></p>
+  </section>
+  <section class="a double">
+    <h2>What is #annotate?</h2>
+    <p>#annotate is a web app for tracking NetHack character intrinsics and notes, price
+      identification, and Sokoban puzzle practice.</p>
+    <p>#annotate is free to use so <a href="/annotate">head on over and check it out.</a></p>
+  </section>
+</MainLayout>
