@@ -11,6 +11,7 @@ import favicon from '../images/favicon.png';
       <meta name="viewport" content="width=device-width,initial-scale=1.0">
       <link rel="icon" href={favicon}>
       <title>NetHackathon</title>
+      <meta name="description" content="NetHackathon is an event where, twice a year, Twitch content creators stream NetHack continuously for 48 hours.">
       <meta property="og:type" content="website">
       <meta property="og:url" content="https://nethackathon.org/">
       <meta property="og:title" content="NetHackathon">
@@ -23,6 +24,11 @@ import favicon from '../images/favicon.png';
       <main>
         <slot />
       </main>
+      <div id="lamp-container">
+        <div id="lamp-message"> </div>
+        <div class="lamp" id="djinni">&nbsp;</div>
+        <div class="lamp" id="magic-lamp">&nbsp;</div>
+      </div>
       <style is:global>
         :root {
           --color-dark: rgb(0, 0, 0);
@@ -57,13 +63,13 @@ import favicon from '../images/favicon.png';
         section a, section h2 {
           color: var(--color-b);
         }
-        section.a a, section.a h2 {
+        strong.a, section.a a, section.a h2 {
           color: var(--color-a);
         }
-        section.b a, section.b h2 {
+        strong.b, section.b a, section.b h2 {
           color: var(--color-b);
         }
-        section.c a, section.c h2 {
+        strong.c, section.c a, section.c h2 {
           color: var(--color-c);
         }
         @media (min-width: 1264px) {
@@ -89,24 +95,91 @@ import favicon from '../images/favicon.png';
             grid-template-columns: 1fr;
           }
         }
-        @media (prefers-color-scheme: dark) {
-          body {
-            color: var(--color-light);
-            background: var(--color-dark);
-          }
-          section {
-            border-color: var(--color-light);
-          }
+        :root, html[data-theme='dark'] {
+          color: var(--color-light);
+          background: var(--color-dark);
         }
-        @media (prefers-color-scheme: light) {
-          body {
-            color: var(--color-dark);
-            background: var(--color-light);
-          }
-          section {
-            border-color: var(--color-dark);
-          }
+        section[data-theme='dark'] {
+          border-color: var(--color-light);
+        }
+        html[data-theme='light'] {
+          color: var(--color-dark);
+          background: var(--color-light);
+        }
+        section[data-theme='light'] {
+          border-color: var(--color-dark);
+        }
+        #lamp-container {
+          position: fixed;
+          bottom: 10px;
+          right: 10px;
+          z-index: 10;
+          width: 75px;
+          text-align: center;
+          padding: 10px;
+        }
+        #lamp-message {
+          text-align: center;
+          padding: 5px;
+        }
+        #magic-lamp {
+          text-align: center;
+          cursor: pointer;
+        }
+        .lamp {
+          -moz-user-select: none;
+          -webkit-user-select: none;
+          -ms-user-select: none;
+          user-select: none;
+          color: #FFFF55;
+          font-family: "Courier New", "Menlo", "DejaVu Sans Mono", "Courier", monospace;
+          font-size: xxx-large;
+          font-weight: bolder;
+          text-shadow: black 0 0 10px;
         }
       </style>
+      <script>
+        function changeLampMessage(msg) {
+          document.getElementById('lamp-message').innerHTML = msg;
+        }
+        window.onload = function() {
+          let rubbed = 0;
+          let freed = false;
+          const magicLampDiv = document.getElementById('magic-lamp');
+          magicLampDiv.innerHTML = '(';
+
+          magicLampDiv.addEventListener('click', () => {
+            let theme = document.documentElement.getAttribute('data-theme')
+            console.log('theme', theme);
+            document.documentElement.setAttribute('data-theme', theme === 'light' ? 'dark' : 'light');
+          });
+
+          magicLampDiv.addEventListener('mousemove', () => {
+            rubbed++;
+            if (rubbed % 100 === 0 && !freed) {
+              changeLampMessage('You see a puff of smoke.');
+            }
+            if (rubbed % 157 === 0 && !freed) {
+              changeLampMessage('You see here a magic lamp.')
+            }
+            if (rubbed % 537 === 0) {
+              freed = true;
+              document.getElementById('djinni').innerHTML = '&';
+              const random = Math.random()
+              if (random < 0.2) {
+                changeLampMessage('I am in your debt. I will grant one wish!');
+              } else if (random < 0.4) {
+                changeLampMessage('Thank you for freeing me!');
+              } else if (random < 0.6) {
+                changeLampMessage('You freed me!');
+              } else if (random < 0.8) {
+                changeLampMessage('It is about time!');
+              } else {
+                changeLampMessage('You disturbed me, fool!');
+              }
+            }
+          });
+        };
+      </script>
     </body>
   </html>
