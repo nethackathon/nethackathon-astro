@@ -1,21 +1,12 @@
+---
+const { homeClass, pastClass } = Astro.props;
+---
 <nav>
-  <a href="/">Home</a>
-  <a href="/past">Past events</a>
+  <a class={homeClass} href="/">Home</a>
+  <a class={pastClass} href="/past">Past events</a>
   <a href="/sign-up">Sign up</a>
   <a href="/annotate">#annotate</a>
 </nav>
-
-<script>
-  document.onreadystatechange = () => {
-    if (document.readyState === 'complete') {
-      for (let link of document.getElementsByTagName('a')) {
-        if (link.href == document.URL) {
-          link.classList.add("active");
-        }
-      }
-    }
-  }
-</script>
 
 <style>
   @media (prefers-color-scheme: dark) {

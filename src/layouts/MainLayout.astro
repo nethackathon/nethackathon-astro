@@ -2,6 +2,7 @@
 import HeaderComponent from '../components/Header.astro';
 import NavComponent from '../components/Nav.astro';
 import favicon from '../images/favicon.png';
+const { homeClass, pastClass } = Astro.props;
 ---
   <!DOCTYPE html>
   <html lang="en">
@@ -20,7 +21,7 @@ import favicon from '../images/favicon.png';
     </head>
     <body>
       <HeaderComponent />
-      <NavComponent />
+      <NavComponent homeClass={homeClass} pastClass={pastClass} />
       <main>
         <slot />
       </main>
