@@ -1,0 +1,48 @@
+<section id="ascensions" class="hidden">
+  <h2>Ascensions</h2>
+</section>
+<section id="deaths" class="hidden">
+  <h2>Deaths</h2>
+</section>
+
+<script>
+  async function getEndedGames () {
+    return Promise.all([
+      fetch(`https://api.nethackathon.org/endedGames`),
+      fetch(`https://eu.nethackathon.org/endedGames`),
+      fetch(`https://au.nethackathon.org/endedGames`)
+    ])
+  }
+  function getListItems(messages) {
+    const list = document.createElement('ul');
+    messages.forEach((m) => {
+      const item = document.createElement('li');
+      item.innerHTML = m.message;
+      list.appendChild(item);
+    });
+    return list;
+  }
+  window.addEventListener('load', async () => {
+    const response = await getEndedGames();
+    const promises = response.map((r) => r.json());
+    const json = await Promise.all(promises)
+    const endedGames = [].concat.apply([], json)
+      .sort((l, m) => parseInt(m.time) - parseInt(l.time) );
+    const deaths = endedGames
+      .filter((l) => l.message.indexOf('ascended') === -1);
+    const ascensions = endedGames
+      .filter((l) => l.message.indexOf('ascended') > -1);
+    const ascensionSection = document.getElementById('ascensions');
+    const deathSection = document.getElementById('deaths');
+    ascensionSection.appendChild(getListItems(ascensions));
+    deathSection.appendChild(getListItems(deaths));
+    ascensionSection.className = 'c';
+    deathSection.className = 'a';
+  });
+</script>
+
+<style>
+  .hidden {
+    display: none;
+  }
+</style>

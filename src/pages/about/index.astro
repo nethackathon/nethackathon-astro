@@ -1,0 +1,45 @@
+---
+import MainLayout from '../../layouts/MainLayout.astro';
+import screenshot from '../../images/nethack-screenshot.png';
+---
+<MainLayout homeClass="active">
+  <section class="a">
+    <h2>What is NetHackathon?</h2>
+    <p>NetHackathon is an event where Twitch content creators stream NetHack continuously
+      for over 48 hours.</p>
+  </section>
+  <section class="a">
+    <h2 style="margin-bottom: 0;">The Fall 2022 Event</h2>
+    <p>We're currently looking for streamers for the next event to be held the weekend of
+    <strong class="a">September 16th - 18th</strong>.</p>
+    <p>
+      <a href="../sign-up">Sign-up as a streamer today!</a>
+    </p>
+  </section>
+  <section class="c">
+    <h2>What is NetHack?</h2>
+    <p>NetHack is a dungeon crawling adventure game, a direct descendent of the eponymous
+      Rogue of rogue-like, and <a href="https://www.thegreatestgameyouwilleverplay.com/">the
+        greatest game you will ever play.</a></p>
+  </section>
+  <section style="padding: 0.5em;" aria-label="NetHack screenshot">
+    <img src={screenshot} alt="Screenshot of NetHack" style="width: 100%;" />
+  </section>
+  <section>
+    <h2>When is the next event?</h2>
+    <p>We run the event twice a year, in the spring and fall, the next event will be held
+      the weekend of September 16th - 18th.</p>
+  </section>
+  <section>
+    <h2>Do you play NetHack?</h2>
+    <p>Are you a Twitch Streamer? We're looking for people to play NetHack on stream, the
+      time commitment is two hours at a time of your choosing during a weekend.</p>
+    <p>To participate in future events <a href="/sign-up">sign up as a streamer today!</a></p>
+  </section>
+  <section class="a double">
+    <h2>What is #annotate?</h2>
+    <p>#annotate is a web app for tracking NetHack character intrinsics and notes, price
+      identification, and Sokoban puzzle practice.</p>
+    <p>#annotate is free to use so <a href="/annotate">head on over and check it out.</a></p>
+  </section>
+</MainLayout>

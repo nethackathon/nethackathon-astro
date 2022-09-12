@@ -1,0 +1,22 @@
+<div>
+  <h2 id="start-in">
+    The Fall 2022 NetHackathon will start <a href="https://google.com/search?q=18%3A00+UTC+in+local+time">Friday,
+    September 16th at 6:00 UTC</a>.
+  </h2>
+</div>
+
+<script>
+  import { DateTime, Interval } from "luxon";
+  const startDate = DateTime.fromISO('2022-09-16T18:00:00.000', {zone: 'utc'});
+  function getTimeLeft() {
+    let timeLeft = Interval.fromDateTimes(DateTime.now(), startDate)
+      .toDuration(['days', 'hours', 'minutes', 'seconds', 'milliseconds']).toObject();
+    return `${timeLeft.days} days, ${timeLeft.hours} hours, ${timeLeft.minutes} minutes, and ${timeLeft.seconds} seconds to go!`;
+  }
+  window.addEventListener('load', () => {
+    document.getElementById('start-in').innerHTML = getTimeLeft();
+    window.setInterval(() => {
+      document.getElementById('start-in').innerHTML = getTimeLeft();
+    }, 1000);
+  });
+</script>
