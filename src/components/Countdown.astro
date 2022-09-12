@@ -1,19 +1,22 @@
 <div>
   <h2 id="start-in">
-    The Fall 2022 NetHackathon will start <a href="https://google.com/search?q=18%3A00+UTC+in+local+time">Friday,
-    September 16th at 6:00 UTC</a>.
+    The Fall 2022 NetHackathon will start Friday,
+    September 16th at <a href="https://google.com/search?q=22%3A00+UTC+in+local+time">10:00 PM UTC</a>.
   </h2>
+  <p>On <strong>September <span id="start-day">16</span> - <span id="end-day">18</span></strong> Twitch content creators will stream NetHack continuously  for over 48 hours!</p>
 </div>
 
 <script>
   import { DateTime, Interval } from "luxon";
-  const startDate = DateTime.fromISO('2022-09-16T18:00:00.000', {zone: 'utc'});
+  const startDate = DateTime.fromISO('2022-09-16T22:00:00.000', {zone: 'utc'});
   function getTimeLeft() {
     let timeLeft = Interval.fromDateTimes(DateTime.now(), startDate)
       .toDuration(['days', 'hours', 'minutes', 'seconds', 'milliseconds']).toObject();
     return `${timeLeft.days} days, ${timeLeft.hours} hours, ${timeLeft.minutes} minutes, and ${timeLeft.seconds} seconds to go!`;
   }
   window.addEventListener('load', () => {
+    document.getElementById('start-day').innerHTML = startDate.toLocal().toFormat('d');
+    document.getElementById('end-day').innerHTML = startDate.toLocal().plus({days: 2}).toFormat('d');
     document.getElementById('start-in').innerHTML = getTimeLeft();
     window.setInterval(() => {
       document.getElementById('start-in').innerHTML = getTimeLeft();

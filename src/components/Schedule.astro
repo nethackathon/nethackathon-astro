@@ -2,7 +2,7 @@
 import { DateTime, Info } from "luxon";
 
 function formatStartTime(start) {
-  const dateTime = DateTime.fromMillis(parseInt(start));
+  const dateTime = DateTime.fromMillis(parseInt(start)).toUTC();
   return `${Info.weekdays()[dateTime.weekday - 1]}, ${dateTime.toLocaleString(DateTime.TIME_SIMPLE)}`;
 }
 
