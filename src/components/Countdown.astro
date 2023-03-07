@@ -1,25 +1,46 @@
-<div>
-  <h2 id="start-in">
-    The Fall 2022 NetHackathon will start Friday,
-    September 16th at <a href="https://google.com/search?q=22%3A00+UTC+in+local+time">10:00 PM UTC</a>.
-  </h2>
-  <p>On <strong>September <span id="start-day">16</span> - <span id="end-day">18</span></strong> Twitch content creators will stream NetHack continuously  for over 48 hours!</p>
-</div>
+<section class="double a" id="countdown">
+  <noscript><p>You enter what seems to be an older, more primitive world. <small>(Enable JavaScript for additional
+    site features.)</small></p></noscript>
+  <div>
+    <h2 id="start-in">
+      The Fall 2022 NetHackathon will start Friday,
+      April 14th at <a href="https://google.com/search?q=22%3A00+UTC+in+local+time">10:00 PM UTC</a>.
+    </h2>
+    <p>On <strong>April <span id="start-day">14</span> - <span id="end-day">16</span></strong> Twitch content creators will stream NetHack continuously  for over 48 hours!</p>
+  </div>
+</section>
 
 <script>
   import { DateTime, Interval } from "luxon";
-  const startDate = DateTime.fromISO('2022-09-16T22:00:00.000', {zone: 'utc'});
+  const startDate = DateTime.fromISO('2023-04-14T22:00:00.000', {zone: 'utc'});
   function getTimeLeft() {
     let timeLeft = Interval.fromDateTimes(DateTime.now(), startDate)
       .toDuration(['days', 'hours', 'minutes', 'seconds', 'milliseconds']).toObject();
     return `${timeLeft.days} days, ${timeLeft.hours} hours, ${timeLeft.minutes} minutes, and ${timeLeft.seconds} seconds to go!`;
   }
+  function showCounter() {
+    const countdown = document.getElementById('countdown');
+    const startIn = document.getElementById('start-in');
+    if (!countdown || !startIn) return;
+    let eventStarted = (DateTime.now() >= startDate);
+    if (eventStarted) {
+      countdown.style.display = 'none';
+      return;
+    }
+    countdown.style.display = 'block';
+    startIn.innerHTML = getTimeLeft();
+  }
   window.addEventListener('load', () => {
-    document.getElementById('start-day').innerHTML = startDate.toLocal().toFormat('d');
-    document.getElementById('end-day').innerHTML = startDate.toLocal().plus({days: 2}).toFormat('d');
-    document.getElementById('start-in').innerHTML = getTimeLeft();
+    const startDay = document.getElementById('start-day');
+    const endDay = document.getElementById('end-day');
+    const startIn = document.getElementById('start-in');
+    if (!startDay || !endDay || !startIn) return;
+    startDay.innerHTML = startDate.toLocal().toFormat('d');
+    endDay.innerHTML = startDate.toLocal().plus({days: 2}).toFormat('d');
+    startIn.innerHTML = getTimeLeft();
+    showCounter();
     window.setInterval(() => {
-      document.getElementById('start-in').innerHTML = getTimeLeft();
+      showCounter();
     }, 1000);
   });
 </script>

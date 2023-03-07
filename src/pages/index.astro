@@ -1,21 +1,27 @@
 ---
 import MainLayout from '../layouts/MainLayout.astro';
+import CurrentStreamer from '../components/CurrentStreamer.astro';
 import Countdown from '../components/Countdown.astro';
 import Streamers from '../components/Streamers.astro';
 import Schedule from '../components/Schedule.astro';
+import AscensionsDeaths from '../components/AscensionsDeaths.astro';
+import Livelog from '../components/Livelog.astro';
+
+const eventLive = false;
 ---
 <MainLayout currentClass="active">
-  <section class="double a">
-    <noscript><p>You enter what seems to be an older, more primitive world. <small>(Enable JavaScript for additional
-      site features.)</small></p></noscript>
-    <Countdown />
-  </section>
+  <Countdown />
+  {eventLive && 
+  <CurrentStreamer />
   <section class="double b">
     <Streamers />
   </section>
   <section class="double c">
     <Schedule />
   </section>
+  <AscensionsDeaths />
+  <Livelog />
+  }
 </MainLayout>
 
 <style>

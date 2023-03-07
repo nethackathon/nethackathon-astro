@@ -1,0 +1,65 @@
+<section class="double a" id="current-streamer">
+  <h2>Currently streaming: <a href="#" id="currently-streaming"></a></h2>
+  <h3 id="up-next-h3">Up next: <a href="#" id="up-next"></a></h3>
+</section>
+
+<style>
+  #current-streamer {
+    display: none;
+  }
+</style>
+
+<script>
+  import { DateTime } from "luxon";
+  import type { Streamer } from "../interfaces/streamer";
+  const startDate = DateTime.fromISO('2022-09-16T22:00:00.000', {zone: 'utc'});
+  function getCurrentStreamer(schedule: Streamer[]) {
+    const currentStreamerSection = document.getElementById('current-streamer');
+    if (!currentStreamerSection) return;
+    const eventStarted = (DateTime.now() >= startDate);
+    if (eventStarted) {
+      currentStreamerSection.style.display = 'block';
+    } else {
+      return
+    }
+    const now = DateTime.now().toMillis() + '';
+    let current = 0;
+    let next = 1;
+    for (let i = 0; i < schedule.length; i++) {
+      if (now > schedule[i].start_time) {
+        current = i;
+        next = i + 1;
+      } else {
+        break;
+      }
+    }
+    let currentStreamer = schedule[current].username;
+    let streamerLink = document.getElementById('currently-streaming');
+    if (!streamerLink) return;
+    streamerLink.setAttribute('href', `https://twitch.tv/${currentStreamer}`);
+    streamerLink.innerText = currentStreamer;
+    if (next < schedule.length) {
+      const nextStreamer = schedule[next].username;
+      let nextLink = document.getElementById('up-next');
+      if (!nextLink) return;
+      nextLink.setAttribute('href', `https://twitch.tv/${nextStreamer}`);
+      nextLink.innerText = nextStreamer;
+    } else {
+      const upNextH3 = document.getElementById('up-next-h3');
+      if (upNextH3) {
+        upNextH3.style.display = 'none';
+      }
+    }
+  }
+  window.addEventListener('load', async () => {
+    const response = await fetch('https://api.nethackathon.org/schedule');
+    const data = await response.json();
+    const schedule = data.streamers.sort((a: Streamer, b: Streamer) => {
+      return a.start_time.localeCompare(b.start_time);
+    });
+    getCurrentStreamer(schedule);
+    window.setInterval(() => {
+      getCurrentStreamer(schedule);
+    }, 5000);
+  });
+</script>

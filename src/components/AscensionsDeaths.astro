@@ -20,6 +20,11 @@
       item.innerHTML = m.message;
       list.appendChild(item);
     });
+    if (messages.length === 0) {
+      const item = document.createElement('li');
+      item.innerHTML = 'None... yet.';
+      list.appendChild(item);
+    }
     return list;
   }
   window.addEventListener('load', async () => {
@@ -34,6 +39,7 @@
       .filter((l) => l.message.indexOf('ascended') > -1);
     const ascensionSection = document.getElementById('ascensions');
     const deathSection = document.getElementById('deaths');
+    if (!ascensionSection || !deathSection) return;
     ascensionSection.appendChild(getListItems(ascensions));
     deathSection.appendChild(getListItems(deaths));
     ascensionSection.className = 'c';

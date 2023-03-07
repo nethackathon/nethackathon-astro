@@ -13,6 +13,7 @@
     height: 60vh;
     overflow: scroll;
     white-space: pre;
+    font-size: small;
   }
 </style>
 
@@ -34,6 +35,7 @@
       .join('\n');
     const livelogSection = document.getElementById('livelog-section');
     const livelogTextarea = document.getElementById('livelog-textarea');
+    if (!livelogSection || !livelogTextarea) return;
     livelogTextarea.innerText = livelog;
     livelogSection.className = 'b double';
   });
