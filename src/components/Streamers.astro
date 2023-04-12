@@ -1,20 +1,22 @@
 ---
-const response = await fetch('https://api.nethackathon.org/streamers');
-const data = await response.json();
-const streamers = data.streamers.sort((a, b) => {
+import { data } from "../data/schedule";
+//const response = await fetch('https://api.nethackathon.org/streamers');
+//const data = await response.json();
+const usernames = data.streamers.sort((a, b) => {
   if (a.username.toUpperCase() < b.username.toUpperCase()) return -1;
   return 1;
-});
+}).map((s) => s.username);
+const uniqueUsernames = [...new Set(usernames)];
 function getDelimiter(index) {
-  if (index === streamers.length - 2) return ", and ";
-  if (index === streamers.length - 1) return ".";
+  if (index === uniqueUsernames.length - 2) return ", and ";
+  if (index === uniqueUsernames.length - 1) return ".";
   return ", ";
 }
 ---
 
 <p>
   Streamers include,
-  {streamers.sort().map((streamer, index) => (
-    <span><a class="streamer" href={`https://twitch.tv/${streamer.username}`} target="_blank">{streamer.username}</a>{getDelimiter(index)}</span>
+  {uniqueUsernames.map((username, index) => (
+    <span><a class="streamer" href={`https://twitch.tv/${username}`} target="_blank">{username}</a>{getDelimiter(index)}</span>
   ))}
 </p>
