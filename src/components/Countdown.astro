@@ -12,7 +12,7 @@
 
 <script>
   import { DateTime, Interval } from "luxon";
-  const startDate = DateTime.fromISO('2023-04-14T22:00:00.000', {zone: 'utc'});
+  const startDate = DateTime.fromISO('2023-04-14T17:00:00.000', {zone: 'utc'});
   function getTimeLeft() {
     let timeLeft = Interval.fromDateTimes(DateTime.now(), startDate)
       .toDuration(['days', 'hours', 'minutes', 'seconds', 'milliseconds']).toObject();
