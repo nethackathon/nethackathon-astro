@@ -25,7 +25,7 @@ const streamers = data.streamers.sort((a: Streamer, b: Streamer) => {
   </thead>
   <tbody>
   {streamers.sort().map((streamer: Streamer) => (
-    <tr>
+    <tr class="schedule-row">
       <td class="start-time" data-ts={streamer.start_time}>{formatStartTime(streamer.start_time)}</td>
       <td><a href={`https://twitch.tv/${streamer.username}`}>{streamer.username}</a></td>
       <td>{(streamer.notes) ? streamer.notes : ''}</td>
@@ -52,10 +52,28 @@ const streamers = data.streamers.sort((a: Streamer, b: Streamer) => {
   td[data-theme='light'] {
     border-bottom-color: var(--color-dark);
   }
+  tr.current-streamer {
+    background-color: rgba(150, 149, 248, 0.5);
+  }
 </style>
 
 <script>
   import { DateTime, Info } from "luxon";
+
+  function highlightCurrentStreamer() {
+    const trs = document.getElementsByClassName('schedule-row');
+    let currentStreamer = false;
+    for (let i = trs.length - 1; i > -1; i--) {
+      const td = trs[i].getElementsByClassName('start-time')[0];
+      const dateTime = DateTime.fromMillis(parseInt(td.dataset.ts)).toLocal();
+      if (!currentStreamer && dateTime < DateTime.local()) {
+        currentStreamer = true;
+        trs[i].classList.add('current-streamer');
+      } else {
+        trs[i].classList.remove('current-streamer');
+      }
+    }
+  }
 
   window.addEventListener('load', () => {
     const timeZone = document.getElementById('time-zone');
@@ -70,5 +88,9 @@ const streamers = data.streamers.sort((a: Streamer, b: Streamer) => {
       tds[i].innerHTML = `<div style="width: 6em; display: inline-block; color: rgb(234, 51, 247); font-weight: bold;" class="day">${dayString}</div> ${dateTime.toLocaleString(DateTime.TIME_SIMPLE)}`;
     }
     timeZone.innerHTML = DateTime.local().offsetNameShort;
+    highlightCurrentStreamer();
+    setInterval(() => {
+      highlightCurrentStreamer();
+    }, 5000);
   });
 </script>

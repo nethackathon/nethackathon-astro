@@ -11,6 +11,7 @@ const eventLive = false;
 ---
 <MainLayout currentClass="active">
   <Countdown />
+  <CurrentStreamer />
   <!--section class="double c">
     <h2 style="margin-bottom: 0;">The Spring 2023 Event</h2>
     <p>We're currently looking for streamers for the next event to be held the weekend of
@@ -25,11 +26,8 @@ const eventLive = false;
   <section class="double c">
     <Schedule />
   </section>
-  {eventLive &&
-  <CurrentStreamer />
   <AscensionsDeaths />
   <Livelog />
-  }
 </MainLayout>
 
 <style>
