@@ -10,10 +10,9 @@
 </style>
 
 <script>
-  import { data } from "../data/schedule";
+  import { startDate, data } from "../data/schedule.js";
   import { DateTime } from "luxon";
   import type { Streamer } from "../interfaces/streamer";
-  const startDate = DateTime.fromISO('2023-04-14T17:00:00.000', {zone: 'utc'});
   function getCurrentStreamer(schedule: Streamer[]) {
     const currentStreamerSection = document.getElementById('current-streamer');
     if (!currentStreamerSection) return;

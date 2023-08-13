@@ -3,16 +3,16 @@
     site features.)</small></p></noscript>
   <div>
     <h2 id="start-in">
-      The Fall 2022 NetHackathon will start Friday,
-      April 14th at <a href="https://google.com/search?q=22%3A00+UTC+in+local+time">10:00 PM UTC</a>.
+      The Fall 2023 NetHackathon will start Friday,
+      September 8th at <a href="https://google.com/search?q=22%3A00+UTC+in+local+time">10:00 PM UTC</a>.
     </h2>
-    <p>On <strong>April <span id="start-day">14</span> - <span id="end-day">16</span></strong> Twitch content creators will stream NetHack continuously  for over 48 hours!</p>
+    <p>On <strong>September <span id="start-day">8</span> - <span id="end-day">10</span></strong> Twitch content creators will stream NetHack continuously for over 48 hours!</p>
   </div>
 </section>
 
 <script>
   import { DateTime, Interval } from "luxon";
-  const startDate = DateTime.fromISO('2023-04-14T17:00:00.000', {zone: 'utc'});
+  import { startDate } from "../data/schedule.js";
   function getTimeLeft() {
     let timeLeft = Interval.fromDateTimes(DateTime.now(), startDate)
       .toDuration(['days', 'hours', 'minutes', 'seconds', 'milliseconds']).toObject();
