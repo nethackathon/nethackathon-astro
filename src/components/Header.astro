@@ -23,9 +23,32 @@
         >thon</tspan></tspan></text>
       </g>
     </svg>
+    <p class="tagline"></p>
   </header>
+  <script>
+    const taglines = [
+      'Day of Reckoning',
+      'Dark Fate',
+      'The Final Chapter',
+      'The Undiscovered Country',
+      'The Battle of Five Armies',
+      'Close Quarters',
+      'World Dominion',
+      'Fully Loaded',
+      'Believer',
+    ]
+    const tagline = 'NetHackathon VI: ' + taglines[Math.floor(Math.random() * taglines.length)]
+    document.getElementsByClassName('tagline')[0].innerHTML = tagline
+  </script>
   <style>
     text {
       font-family: "Deja Vu Sans Mono", Menlo, sans-serif;
+    }
+    .tagline {
+      font-size: 1.5em;
+      font-weight: bold;
+      text-align: center;
+      margin: 0;
+      color: var(--color-a);
     }
   </style>
