@@ -3,27 +3,33 @@ import MainLayout from "../../layouts/MainLayout.astro";
 ---
 
 <MainLayout>
-  <section class="double">
-    <h1>Streamer FAQ</h1>
+  <section class="a double">
+    <h2>Streamer FAQ</h2>
+    <p>If you have any questions that are not answered here, ask on the #nethackathon-tech channel of the
+      <a href="https://discord.gg/e8yGqb75wE">NetHackathon Discord</a>.</p>
   </section>
-  <section class="a">
-    <h2>How do I connect to the server</h2>
+  <section class="c">
+    <h2>How do I connect to the server (NEW!)</h2>
     <p>
-      You need to SSH into the server you've been assigned to, the servers are:
+      We're now running the NetHackathon event on the Hardfought servers, login to the closest server to you:
     </p>
     <ul>
-      <li>nethackathon.org (US)</li>
-      <li>eu.nethackathon.org (EU/UK)</li>
-      <li>au.nethackathon.org (AU)</li>
+      <li>hardfought.org (US)</li>
+      <li>eu.hardfought.org (EU/UK)</li>
+      <li>au.hardfought.org (AU)</li>
     </ul>
     <p></p>
     <p>
       Cloudmillion recorded a video walk-through on connecting to the server in
       PuTTY and running the shared save:
     </p>
-    <p>TODO add video</p>
+    <p>
+      <video controls width="450">
+        <source src="https://nethackathon.org/2022-04-15_13-03-13.mp4" type="video/mp4">
+      </video>
+    </p>
   </section>
-  <section class="a">
+  <section class="b">
     <h2>SSH? Never heard of it.</h2>
     <p>
       You'll need a SSH client, if you're on Windows, <a
@@ -32,68 +38,30 @@ import MainLayout from "../../layouts/MainLayout.astro";
     </p>
     <p>
       On Linux or Mac systems you can simply open a shell or Terminal window and
-      type `ssh [your username]@nethackathon.org`.
+      type `ssh nethack@hardfought.org`.
     </p>
   </section>
 
   <section class="a">
     <h2>OK, I'm connected to the server. Now what?</h2>
     <p>
-      Type `nethackathon` and you'll be prompted to choose one of four default
-      NetHack configurations.
+      First, press `l` to log in and enter `nethackathon` for the username. We'll provide all streamers with the
+      password ahead of the event.
     </p>
     <p>
-      After you choose your configuration, it will launch NetHack with the
-      shared save.
-    </p>
-  </section>
-  <section class="a">
-    <h2>
-      When I type `nethackathon` it says "someone (some server) is currently
-      running NetHack, ask them to save and quit."
-    </h2>
-    <p>
-      The nethackathon script only allows one person to run NetHack at a time,
-      ask the person listed to save and quit.
+      At the main screen type `N` to launch - Tournament (NetHackathon) and then `p` to play.
     </p>
   </section>
 
-  <section class="a">
-    <h2>But the person listed has already saved and quit / is me.</h2>
-    <p>
-      If you're on the same server as the last person to run the nethackathon
-      script and NetHack is no longer running, type `rm /nethackathon/running`
-      which will allow you to run `nethackathon` again.
-    </p>
-    <p>
-      If you're on a different server than the last person to run the script,
-      ask someone on that server to `rm /nethackaton/running`, run
-      `nethackathon`, and save the game.
-    </p>
-  </section>
-
-  <section class="a">
+  <section class="c">
     <h2>How can I configure my NetHack settings?</h2>
     <p>
-      After running `nethackathon` for the first time, your personal settings
-      will be stored in a `.nethackrc` file in your home directory (where you
-      start when you log into the server).
-    </p>
-    <p>
-      You can edit the configuration file by typing, for instance, `nano
-      .nethackrc`. When you're done editing type CTRL-X to exit and type `Y` and
-      enter to confirm and save.
-    </p>
-    <p>
-      If you already have a good configuration set up on a server like
-      hardfought, browse for the location of your configuration file <a
-        href="https://www.hardfought.org/nethack/userdata/">here</a
-      >. Once you find the URL of your configuration file type the following in
-      your home directory: `wget [url of your config] -O .nethackrc`.
+      After entering the `Tournament (NetHackathon)` screen, press `1` to edit your nethack configuration, or `j` to
+      copy your existing settings from your hardfought account.
     </p>
   </section>
 
-  <section class="a">
+  <section class="b">
     <h2>What's this I hear about a NetHack Twitch bot?</h2>
     <p>
       finitelycraig has programmed up a bot for us to use, just head to
