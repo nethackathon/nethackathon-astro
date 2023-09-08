@@ -8,9 +8,7 @@
 <script>
   async function getEndedGames () {
     return Promise.all([
-      fetch(`https://api.nethackathon.org/endedGames`),
-      fetch(`https://eu.nethackathon.org/endedGames`),
-      fetch(`https://au.nethackathon.org/endedGames`)
+      fetch(`https://api.nethackathon.org/endedGames`)
     ])
   }
   function getListItems(messages) {

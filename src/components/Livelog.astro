@@ -20,9 +20,7 @@
 <script>
   async function getLivelog () {
     return Promise.all([
-      fetch(`https://api.nethackathon.org/livelog`),
-      fetch(`https://eu.nethackathon.org/livelog`),
-      fetch(`https://au.nethackathon.org/livelog`)
+      fetch(`https://api.nethackathon.org/livelog`)
     ])
   }
   window.addEventListener('load', async () => {
