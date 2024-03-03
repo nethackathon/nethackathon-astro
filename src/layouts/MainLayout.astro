@@ -28,6 +28,7 @@ const lastEvent = response.events[response.events.length - 2];
     <body>
       <HeaderComponent />
       <NavComponent currentEvent={currentEvent} lastEvent={lastEvent} currentPage={currentPage} />
+      <slot name="nav" />
       <main>
         <slot />
       </main>
