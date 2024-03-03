@@ -1,0 +1,38 @@
+---
+
+const { eventId } = Astro.props;
+
+const response = await fetch(`${import.meta.env.NODE_API}/event/${eventId}/streamers`)
+  .then((response) => response.json());
+const streamers = response.streamers;
+
+const withComma = (index: number, length: number) => {
+  const comma = 
+    (index === length - 1) ? '!' :
+    (index === length - 2) ? ', and ' :
+    ', ';
+  return comma;
+};
+
+---
+
+<p class="streamers">Event streamers included:
+  {streamers.map((streamer: string, i: number) => (
+    <>
+      <a href={"https://twitch.tv/" + streamer}>
+          {streamer}{withComma(i, streamers.length)} 
+      </a>
+    </>
+  ))}
+</p>
+
+<style>
+  .streamers a {
+    text-decoration: none;
+    font-weight: normal;
+  }
+
+  .streamers a:hover {
+    text-decoration: underline;
+  }
+</style>

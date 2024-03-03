@@ -1,0 +1,39 @@
+---
+
+import MainLayout from '../../layouts/MainLayout.astro';
+import EventStreamers from '../../components/EventStreamers.astro';
+import EventMedia from '../../components/EventMedia.astro';
+import PastEventsNav from '../../components/PastEventsNav.astro';
+
+export async function getStaticPaths() {
+  const eventsResponse = await fetch(`${import.meta.env.NODE_API}/events`)
+    .then((res) => res.json());
+  const events = eventsResponse.events;
+  return events.map((event) => {
+    return {
+      params: {
+        eventId: event.id,
+      },
+      props: {
+        title: event.title,
+      }
+    };
+  });
+}
+
+const { eventId } = Astro.params;
+const { title } = Astro.props;
+
+---
+
+<MainLayout currentPage="past">
+  <PastEventsNav eventId={eventId} />
+  <section class="a double">
+    <h2>{title}</h2>
+    <EventStreamers eventId={eventId} />
+    <EventMedia eventId={eventId} />
+  </section>
+</MainLayout>
+
+<style>
+</style>

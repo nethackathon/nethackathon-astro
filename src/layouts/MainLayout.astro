@@ -1,8 +1,14 @@
 ---
+
 import HeaderComponent from '../components/Header.astro';
 import NavComponent from '../components/Nav.astro';
 import favicon from '../images/favicon.png';
-const { currentClass, homeClass, pastClass } = Astro.props;
+const { currentPage } = Astro.props;
+const response = await fetch(`${import.meta.env.NODE_API}/events`)
+  .then((response) => response.json());
+const currentEvent = response.events[response.events.length - 1];
+const lastEvent = response.events[response.events.length - 2];
+
 ---
   <!DOCTYPE html>
   <html lang="en">
@@ -21,7 +27,7 @@ const { currentClass, homeClass, pastClass } = Astro.props;
     </head>
     <body>
       <HeaderComponent />
-      <NavComponent homeClass={homeClass} pastClass={pastClass} currentClass={currentClass} />
+      <NavComponent currentEvent={currentEvent} lastEvent={lastEvent} currentPage={currentPage} />
       <main>
         <slot />
       </main>
@@ -137,6 +143,33 @@ const { currentClass, homeClass, pastClass } = Astro.props;
           font-size: xxx-large;
           font-weight: bolder;
           text-shadow: black 0 0 10px;
+        }
+        @media (prefers-color-scheme: dark) {
+          nav a:hover {
+            background-color: var(--color-dark-highlight);
+          }
+        }
+        @media (prefers-color-scheme: light) {
+          nav a:hover {
+            background-color: var(--color-light-highlight);
+          }
+        }
+        nav {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: center;
+          min-height: 48px;
+          padding: 0 auto;
+        }
+        nav a {
+          display: inline-block;
+          line-height: 48px;
+          height: 48px;
+          font-size: x-large;
+          padding: 0 1em;
+        }
+        nav a.active {
+          color: var(--color-a);
         }
       </style>
       <script>

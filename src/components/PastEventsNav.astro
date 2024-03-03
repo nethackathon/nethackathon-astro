@@ -1,0 +1,14 @@
+---
+
+const response = await fetch(`${import.meta.env.NODE_API}/events`)
+  .then((response) => response.json());
+const events = response.events;
+
+const { eventId } = Astro.props;
+
+---
+<nav>
+{events.map((event) => (
+  <a class={(eventId === event.id + '') ? 'active' : ''} href={"/past/" + event.id}>{event.title}</a>
+))}
+</nav>
