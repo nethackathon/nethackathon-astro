@@ -9,16 +9,21 @@ export async function getStaticPaths() {
   const eventsResponse = await fetch(`${import.meta.env.NODE_API}/events`)
     .then((res) => res.json());
   const events = eventsResponse.events;
-  return events.map((event) => {
-    return {
-      params: {
-        eventId: event.id,
-      },
-      props: {
-        title: event.title,
-      }
-    };
-  });
+  return events
+    .filter((event) => {
+      // Only return events that have ended
+      return new Date() > new Date(event.event_end);
+    })
+    .map((event) => {
+      return {
+        params: {
+          eventId: event.id,
+        },
+        props: {
+          title: event.title,
+        }
+      };
+    });
 }
 
 const { eventId } = Astro.params;

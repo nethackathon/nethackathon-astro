@@ -1,6 +1,15 @@
 ---
 import MainLayout from '../../layouts/MainLayout.astro';
+import SignUp from './_SignUp.vue';
+
+const response = await fetch(`${import.meta.env.NODE_API}/event/current`)
+  .then((res) => res.json());
+const currentEvent = response.currentEvent;
 ---
 <MainLayout>
-  <h1>Sign up</h1>
+  <SignUp
+    client:load
+    nodeApi={import.meta.env.NODE_API}
+    currentEvent={currentEvent}
+  />
 </MainLayout>

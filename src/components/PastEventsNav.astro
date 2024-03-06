@@ -8,7 +8,7 @@ const { eventId } = Astro.props;
 
 ---
 <nav>
-{events.map((event) => (
+{events.filter((event) => (new Date() > new Date(event.event_end))).map((event) => (
   <a class={(eventId === event.id + '') ? 'active' : ''} href={"/past/" + event.id}>{event.title}</a>
 ))}
 </nav>
