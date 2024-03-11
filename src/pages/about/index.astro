@@ -1,21 +1,34 @@
 ---
 import MainLayout from '../../layouts/MainLayout.astro';
 import screenshot from '../../images/nethack-screenshot.png';
+import { parseEvent } from '../../js/shared.js';
+
+const { currentEvent } = await fetch(`${import.meta.env.NODE_API}/event/current`)
+  .then((response) => response.json());
+const eventObject = parseEvent(currentEvent); 
 ---
 <MainLayout currentPage="about">
   <section class="a">
     <h2>What is NetHackathon?</h2>
-    <p>NetHackathon is an event where Twitch content creators stream NetHack continuously
-      for over 48 hours.</p>
+    <p>NetHackathon is an event where Twitch content creators stream NetHack
+      continuously for over 48 hours.</p>
+    <p>All streamers share one save file and pass the character on to the next
+      streamer in the schedule when they raid.</p>
+    <p>This continues until the character dies (or ascends) and the current
+      player starts a new character.</p>
   </section>
   <section class="a">
-    <h2 style="margin-bottom: 0;">The Fall 2023 Event</h2>
-    <p>The next event will be held the weekend of September 8 - 10th, for more information go to the <a href="/">Current event</a> page.</p>
-    <!--p>We're currently looking for streamers for the next event to be held the weekend of
-    <strong class="a">September 8th - 10th</strong>.</p>
-    <p>
-      <a href="/sign-up">Sign up today!</a>
-    </p!-->
+    <h2 style="margin-bottom: 0;">{eventObject.eventTitle}</h2>
+    <p>The next event will be held the weekend of {eventObject.eventDates}, for more information go to the <a href="/">Current event</a> page.</p>
+    { eventObject.signupsOpen &&
+      <>
+        <p>We're currently looking for streamers for the next event to be held the weekend of
+        <strong class="a">{eventObject.eventDates}</strong>.</p>
+        <p>
+          <a href="/sign-up">Sign up today!</a>
+        </p>
+      </>
+    }
   </section>
   <section class="c">
     <h2>What is NetHack?</h2>
@@ -29,7 +42,7 @@ import screenshot from '../../images/nethack-screenshot.png';
   <section>
     <h2>When is the next event?</h2>
     <p>We run the event twice a year, in the spring and fall, the next event will be held
-      the weekend of September 8th - 10th.</p>
+      the weekend of {eventObject.eventDates}.</p>
   </section>
   <section>
     <h2>Do you play NetHack?</h2>

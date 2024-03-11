@@ -1,25 +1,27 @@
 ---
+
 import MainLayout from '../layouts/MainLayout.astro';
 import CurrentStreamer from '../components/CurrentStreamer.astro';
-import Countdown from '../components/Countdown.astro';
+import EventCountdown from '../components/EventCountdown.astro';
+import SignupCountdown from '../components/SignupCountdown.astro';
 import Streamers from '../components/Streamers.astro';
 import Schedule from '../components/Schedule.astro';
 import AscensionsDeaths from '../components/AscensionsDeaths.astro';
 import Livelog from '../components/Livelog.astro';
+import { parseEvent } from '../js/shared.js';
 
-const eventLive = false;
+const response = await fetch(`${import.meta.env.NODE_API}/event/current`)
+  .then((response) => response.json());
+const currentEvent = response.currentEvent;
+
+const eventObject = parseEvent(currentEvent); 
+
 ---
 <MainLayout currentPage="home">
-  <Countdown />
-  <CurrentStreamer />
-  <!--section class="double c">
-    <h2 style="margin-bottom: 0;">The Fall 2023 Event</h2>
-    <p>We're currently looking for streamers for the next event to be held the weekend of
-      <strong class="c">September 8th - 10th</strong>.</p>
-    <p>
-      <a href="/sign-up">Sign up today!</a>
-    </p>
-  </section-->
+  { eventObject.beforeEvent && <EventCountdown currentEvent={eventObject} /> }
+  { eventObject.eventLive && <CurrentStreamer /> }
+  { eventObject.signupsOpen && <SignupCountdown currentEvent={eventObject} /> }
+  { eventObject.eventLive &&
   <section class="double b">
     <Streamers />
   </section>
@@ -28,6 +30,7 @@ const eventLive = false;
   </section>
   <AscensionsDeaths />
   <Livelog />
+  }
 </MainLayout>
 
 <style>

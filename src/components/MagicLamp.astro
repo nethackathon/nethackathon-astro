@@ -1,0 +1,80 @@
+<div id="lamp-container">
+  <div id="lamp-message"> </div>
+  <div class="lamp" id="djinni">&nbsp;</div>
+  <div class="lamp" id="magic-lamp">&nbsp;</div>
+</div>
+
+<style scoped>
+  #lamp-container {
+    position: fixed;
+    bottom: 0.5em;
+    right: 1.5em;
+    z-index: 10;
+    width: 75px;
+    text-align: center;
+    padding: 0;
+    text-shadow: black 0 0 10px;
+  }
+  #lamp-message {
+    text-align: center;
+    padding: 5px;
+  }
+  #magic-lamp {
+    text-align: center;
+    cursor: pointer;
+  }
+  .lamp {
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    color: #FFFF55;
+    font-family: "Courier New", "Menlo", "DejaVu Sans Mono", "Courier", monospace;
+    font-size: xxx-large;
+    font-weight: bolder;
+  }
+</style>
+
+<script>
+  function changeLampMessage(msg) {
+    document.getElementById('lamp-message').innerHTML = msg;
+  }
+  window.onload = function() {
+    let rubbed = 0;
+    let freed = false;
+    const magicLampDiv = document.getElementById('magic-lamp');
+    magicLampDiv.innerHTML = '(';
+
+    magicLampDiv.addEventListener('click', () => {
+      let theme = document.documentElement.getAttribute('data-theme')
+      console.log('theme', theme);
+      document.documentElement.setAttribute('data-theme', theme === 'light' ? 'dark' : 'light');
+    });
+
+    magicLampDiv.addEventListener('mousemove', () => {
+      rubbed++;
+      if (rubbed % 100 === 0 && !freed) {
+        changeLampMessage('You see a puff of smoke.');
+      }
+      if (rubbed % 157 === 0 && !freed) {
+        changeLampMessage('You see here a magic lamp.')
+      }
+      if (rubbed % 537 === 0) {
+        freed = true;
+        document.getElementById('djinni').innerHTML = '&';
+        const random = Math.random()
+        if (random < 0.2) {
+          changeLampMessage('I am in your debt. I will grant one wish!');
+        } else if (random < 0.4) {
+          changeLampMessage('Thank you for freeing me!');
+        } else if (random < 0.6) {
+          changeLampMessage('You freed me!');
+        } else if (random < 0.8) {
+          changeLampMessage('It is about time!');
+        } else {
+          changeLampMessage('You disturbed me, fool!');
+        }
+      }
+    });
+  };
+</script>

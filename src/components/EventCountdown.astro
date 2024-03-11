@@ -1,0 +1,18 @@
+---
+
+import Countdown from './Countdown.astro';
+const { currentEvent } = Astro.props;
+
+---
+
+<section class="double a">
+  <div>
+    <h2>
+      The {currentEvent.eventTitle} NetHackathon will start in <Countdown startDate={currentEvent.eventStart} spanId="event-countdown" />.
+    </h2>
+    <p>On <strong>{currentEvent.eventDates}</strong> Twitch content creators will stream NetHack continuously for over 48 hours!</p>
+  </div>
+</section>
+
+<script>
+</script>

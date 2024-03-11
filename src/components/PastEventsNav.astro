@@ -12,3 +12,9 @@ const { eventId } = Astro.props;
   <a class={(eventId === event.id + '') ? 'active' : ''} href={"/past/" + event.id}>{event.title}</a>
 ))}
 </nav>
+
+<style scoped>
+  a {
+    font-size: smaller;
+  }
+</style>

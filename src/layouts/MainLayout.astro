@@ -1,7 +1,10 @@
 ---
 
-import HeaderComponent from '../components/Header.astro';
+import Charity from '../components/Charity.astro';
+import Logo from '../components/Logo.astro';
+import MagicLamp from '../components/MagicLamp.astro';
 import NavComponent from '../components/Nav.astro';
+import Tagline from '../components/Tagline.astro';
 import favicon from '../images/favicon.png';
 const { currentPage } = Astro.props;
 const response = await fetch(`${import.meta.env.NODE_API}/events`)
@@ -26,195 +29,133 @@ const lastEvent = response.events[response.events.length - 2];
       <meta property="og:image" content="https://nethackathon.org/favicon.png">
     </head>
     <body>
-      <HeaderComponent />
-      <NavComponent currentEvent={currentEvent} lastEvent={lastEvent} currentPage={currentPage} />
-      <slot name="nav" />
+      <header>
+        { currentEvent.charity && <Charity /> }
+        <Logo />
+        { false && <Tagline /> }
+        <NavComponent currentEvent={currentEvent} lastEvent={lastEvent} currentPage={currentPage} />
+        <slot name="nav" />
+      </header>
       <main>
         <slot />
+        <MagicLamp />
       </main>
-      <div id="lamp-container">
-        <div id="lamp-message"> </div>
-        <div class="lamp" id="djinni">&nbsp;</div>
-        <div class="lamp" id="magic-lamp">&nbsp;</div>
-      </div>
-      <style is:global>
-        :root {
-          --color-dark: rgb(0, 0, 0);
-          --color-dark-highlight: rgb(27, 27, 27);
-          --color-light: rgb(255, 255, 255);
-          --color-light-highlight: rgb(227, 227, 227);
-          --color-a: rgb(235, 86, 79);
-          --color-b: rgb(150, 149, 248);
-          --color-c: rgb(234, 51, 247);
-        }
-        body {
-          font-family: "DejaVu Sans Mono", "Menlo", sans-serif;
-          font-size: 15pt;
-        }
-        h2 {
-          font-size: 22pt;
-        }
-        a {
-          color: var(--color-b);
-          font-weight: bold;
-        }
-        main {
-          margin: 1em 0;
-          display: grid;
-          gap: 0.5em;
-        }
-        section {
-          padding: 0 1em;
-          border: 1px solid;
-          border-radius: 3px;
-        }
-        section a, section h2 {
-          color: var(--color-b);
-        }
-        strong.a, section.a a, section.a h2 {
-          color: var(--color-a);
-        }
-        strong.b, section.b a, section.b h2 {
-          color: var(--color-b);
-        }
-        strong.c, section.c a, section.c h2 {
-          color: var(--color-c);
-        }
-        @media (min-width: 1264px) {
-          body {
-            padding: 2em 20%;
-          }
-        }
-        @media (max-width: 1263px) {
-          body {
-            padding: 2em;
-          }
-        }
-        @media (min-width: 960px) {
-          main {
-            grid-template-columns: 1fr 1fr;
-          }
-          section.double {
-            grid-column: 1 / 3;
-          }
-        }
-        @media (max-width: 959px) {
-          main {
-            grid-template-columns: 1fr;
-          }
-        }
-        :root, html[data-theme='dark'] {
-          color: var(--color-light);
-          background: var(--color-dark);
-        }
-        section[data-theme='dark'] {
-          border-color: var(--color-light);
-        }
-        html[data-theme='light'] {
-          color: var(--color-dark);
-          background: var(--color-light);
-        }
-        section[data-theme='light'] {
-          border-color: var(--color-dark);
-        }
-        #lamp-container {
-          position: fixed;
-          bottom: 10px;
-          right: 10px;
-          z-index: 10;
-          width: 75px;
-          text-align: center;
-          padding: 10px;
-        }
-        #lamp-message {
-          text-align: center;
-          padding: 5px;
-        }
-        #magic-lamp {
-          text-align: center;
-          cursor: pointer;
-        }
-        .lamp {
-          -moz-user-select: none;
-          -webkit-user-select: none;
-          -ms-user-select: none;
-          user-select: none;
-          color: #FFFF55;
-          font-family: "Courier New", "Menlo", "DejaVu Sans Mono", "Courier", monospace;
-          font-size: xxx-large;
-          font-weight: bolder;
-          text-shadow: black 0 0 10px;
-        }
-        @media (prefers-color-scheme: dark) {
-          nav a:hover {
-            background-color: var(--color-dark-highlight);
-          }
-        }
-        @media (prefers-color-scheme: light) {
-          nav a:hover {
-            background-color: var(--color-light-highlight);
-          }
-        }
-        nav {
-          display: flex;
-          flex-wrap: wrap;
-          justify-content: center;
-          min-height: 48px;
-          padding: 0 auto;
-        }
-        nav a {
-          display: inline-block;
-          line-height: 48px;
-          height: 48px;
-          font-size: x-large;
-          padding: 0 1em;
-        }
-        nav a.active {
-          color: var(--color-a);
-        }
-      </style>
-      <script>
-        function changeLampMessage(msg) {
-          document.getElementById('lamp-message').innerHTML = msg;
-        }
-        window.onload = function() {
-          let rubbed = 0;
-          let freed = false;
-          const magicLampDiv = document.getElementById('magic-lamp');
-          magicLampDiv.innerHTML = '(';
-
-          magicLampDiv.addEventListener('click', () => {
-            let theme = document.documentElement.getAttribute('data-theme')
-            console.log('theme', theme);
-            document.documentElement.setAttribute('data-theme', theme === 'light' ? 'dark' : 'light');
-          });
-
-          magicLampDiv.addEventListener('mousemove', () => {
-            rubbed++;
-            if (rubbed % 100 === 0 && !freed) {
-              changeLampMessage('You see a puff of smoke.');
-            }
-            if (rubbed % 157 === 0 && !freed) {
-              changeLampMessage('You see here a magic lamp.')
-            }
-            if (rubbed % 537 === 0) {
-              freed = true;
-              document.getElementById('djinni').innerHTML = '&';
-              const random = Math.random()
-              if (random < 0.2) {
-                changeLampMessage('I am in your debt. I will grant one wish!');
-              } else if (random < 0.4) {
-                changeLampMessage('Thank you for freeing me!');
-              } else if (random < 0.6) {
-                changeLampMessage('You freed me!');
-              } else if (random < 0.8) {
-                changeLampMessage('It is about time!');
-              } else {
-                changeLampMessage('You disturbed me, fool!');
-              }
-            }
-          });
-        };
-      </script>
     </body>
   </html>
+
+
+<style is:global>
+  :root {
+    --color-dark: rgb(0, 0, 0);
+    --color-dark-highlight: rgb(27, 27, 27);
+    --color-light: rgb(255, 255, 255);
+    --color-light-highlight: rgb(227, 227, 227);
+    --color-a: rgb(235, 86, 79);
+    --color-b: rgb(150, 149, 248);
+    --color-c: rgb(234, 51, 247);
+  }
+  body {
+    font-family: "DejaVu Sans Mono", "Menlo", sans-serif;
+    font-size: 15pt;
+  }
+  h2 {
+    font-size: 22pt;
+  }
+  a {
+    color: var(--color-b);
+    font-weight: bold;
+  }
+  header {
+    display: grid;
+    gap: 0.5em;
+  }
+  main {
+    margin: 1em 0;
+    display: grid;
+    gap: 0.5em;
+  }
+  section {
+    padding: 0 1em;
+    border: 1px solid;
+    border-radius: 3px;
+  }
+  section a, section h2 {
+    color: var(--color-b);
+  }
+  strong.a, section.a a, section.a h2 {
+    color: var(--color-a);
+  }
+  strong.b, section.b a, section.b h2 {
+    color: var(--color-b);
+  }
+  strong.c, section.c a, section.c h2 {
+    color: var(--color-c);
+  }
+  @media (min-width: 1264px) {
+    body {
+      padding: 2em 20%;
+    }
+  }
+  @media (max-width: 1263px) {
+    body {
+      padding: 1em 2em 2em 2em;
+    }
+  }
+  @media (min-width: 960px) {
+    main {
+      grid-template-columns: 1fr 1fr;
+    }
+    section.double {
+      grid-column: 1 / 3;
+    }
+  }
+  @media (max-width: 959px) {
+    header {
+      grid-template-columns: 1fr;
+    }
+    main {
+      grid-template-columns: 1fr;
+    }
+  }
+  :root, html[data-theme='dark'] {
+    color: var(--color-light);
+    background: var(--color-dark);
+  }
+  section[data-theme='dark'] {
+    border-color: var(--color-light);
+  }
+  html[data-theme='light'] {
+    color: var(--color-dark);
+    background: var(--color-light);
+  }
+  section[data-theme='light'] {
+    border-color: var(--color-dark);
+  }
+  @media (prefers-color-scheme: dark) {
+    nav a:hover {
+      background-color: var(--color-dark-highlight);
+    }
+  }
+  @media (prefers-color-scheme: light) {
+    nav a:hover {
+      background-color: var(--color-light-highlight);
+    }
+  }
+  nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    min-height: 48px;
+    padding: 0 auto;
+  }
+  nav a {
+    display: inline-block;
+    line-height: 48px;
+    height: 48px;
+    font-size: x-large;
+    padding: 0 1em;
+  }
+  nav a.active {
+    color: var(--color-a);
+  }
+</style>

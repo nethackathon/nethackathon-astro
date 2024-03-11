@@ -1,30 +1,26 @@
 <script setup lang="ts">
   import { computed } from 'vue';
+  import { eventDateString } from '../../js/shared.js';
 
   const props = defineProps({
     nodeApi: String,
     currentEvent: Object,
   });
-  const signupStart = new Date(props.currentEvent.signup_start);
-  const signupEnd = new Date(props.currentEvent.signup_end);
-  const eventStart = new Date(props.currentEvent.event_start);
-  const eventEnd = new Date(props.currentEvent.event_end);
+  const signupStart = props.currentEvent.signup_start;
+  const signupEnd = props.currentEvent.signup_end;
+  const eventStart = props.currentEvent.event_start;
+  const eventEnd = props.currentEvent.event_end;
 
   const signupsClosed = computed(() => {
-    const now = new Date();
+    const now = new Date().toISOString();
     return (
-      signupStart < now ||
-      signupEnd > now
+      now < signupStart ||
+      now > signupEnd
     );
   });
-  const eventDate = computed(() => {
-    const fullMonth = { month: 'long' };
-    const startMonth = eventStart.toLocaleString(undefined, fullMonth);
-    const endMonth = eventEnd.toLocaleString(undefined, fullMonth);
-    return (startMonth === endMonth) ? 
-      `${startMonth} ${eventStart.getDate()} - ${eventEnd.getDate()}` :
-      `${startMonth} ${eventStart.getDate()} - ${endMonth} ${eventEnd.getDate()}`; 
-  });
+
+  const eventDate = eventDateString(eventStart, eventEnd);
+
   const redirectToTwitch = () => {
     location.href = `${props.nodeApi}/twitch/auth`;
   };

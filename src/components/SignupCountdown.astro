@@ -1,0 +1,21 @@
+---
+
+import Countdown from './Countdown.astro';
+const { currentEvent } = Astro.props;
+
+---
+
+<section class="double c">
+  <p>We're currently looking for streamers for the next event to be held the weekend of
+    <strong class="c">{currentEvent.eventDates}</strong>.</p>
+  <p>
+  <h2>
+    Signups end in <Countdown startDate={currentEvent.signupsEnd} spanId="signup-countdown" />
+  </h2>
+  <p>
+    <a href="/sign-up">Sign up today!</a>
+  </p>
+</section>
+
+<script>
+</script>

@@ -1,46 +1,44 @@
-<section class="double a" id="countdown">
-  <noscript><p>You enter what seems to be an older, more primitive world. <small>(Enable JavaScript for additional
-    site features.)</small></p></noscript>
-  <div>
-    <h2 id="start-in">
-      The Fall 2023 NetHackathon will start Friday,
-      September 8th at <a href="https://google.com/search?q=22%3A00+UTC+in+local+time">10:00 PM UTC</a>.
-    </h2>
-    <p>On <strong>September <span id="start-day">8</span> - <span id="end-day">10</span></strong> Twitch content creators will stream NetHack continuously for over 48 hours!</p>
-  </div>
-</section>
+---
+
+const { startDate, spanId } = Astro.props;
+
+---
+
+<span
+  data-start={startDate}
+  id={spanId}
+  class="counter"
+>
+  {startDate}
+</span>
 
 <script>
-  import { DateTime, Interval } from "luxon";
-  import { startDate } from "../data/schedule.js";
-  function getTimeLeft() {
+  import { DateTime, Interval } from 'luxon';
+
+  function getTimeLeft(startDate) {
     let timeLeft = Interval.fromDateTimes(DateTime.now(), startDate)
       .toDuration(['days', 'hours', 'minutes', 'seconds', 'milliseconds']).toObject();
-    return `${timeLeft.days} days, ${timeLeft.hours} hours, ${timeLeft.minutes} minutes, and ${timeLeft.seconds} seconds to go!`;
+    return `${timeLeft.days} days, ${timeLeft.hours} hours, ${timeLeft.minutes} minutes, and ${timeLeft.seconds} seconds`;
   }
-  function showCounter() {
-    const countdown = document.getElementById('countdown');
-    const startIn = document.getElementById('start-in');
-    if (!countdown || !startIn) return;
-    let eventStarted = (DateTime.now() >= startDate);
-    if (eventStarted) {
-      countdown.style.display = 'none';
-      return;
+
+  function showCounters() {
+    const counters = document.getElementsByClassName('counter');
+    if (!counters.length) return;
+    for (const counter of counters) {
+      const startDate = DateTime.fromISO(counter.dataset.start);
+      counter.innerHTML = getTimeLeft(startDate);
     }
-    countdown.style.display = 'block';
-    startIn.innerHTML = getTimeLeft();
   }
-  window.addEventListener('load', () => {
-    const startDay = document.getElementById('start-day');
-    const endDay = document.getElementById('end-day');
-    const startIn = document.getElementById('start-in');
-    if (!startDay || !endDay || !startIn) return;
-    startDay.innerHTML = startDate.toLocal().toFormat('d');
-    endDay.innerHTML = startDate.toLocal().plus({days: 2}).toFormat('d');
-    startIn.innerHTML = getTimeLeft();
-    showCounter();
-    window.setInterval(() => {
-      showCounter();
-    }, 1000);
-  });
+
+  if (!window.setupCounter) {
+    window.setupCounter = true;
+    window.addEventListener('load', () => {
+      const counters = document.getElementsByClassName('counter');
+      if (!counters.length) return;
+      showCounters();
+      window.setInterval(() => {
+        showCounters();
+      }, 1000);
+    });
+  }
 </script>
