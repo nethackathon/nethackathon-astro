@@ -1,7 +1,8 @@
 <script setup lang="ts">
-  import { computed, onMounted, reactive, watch } from 'vue';
+  import { computed, onMounted, reactive, ref, watch } from 'vue';
   import SignIn from './_SignIn.vue';
   import SignUpForm from './_SignUpForm.vue';
+  import SignUpSchedule from './_SignUpSchedule.vue';
   import _ from 'lodash';
 
   const SaveState = {
@@ -14,11 +15,12 @@
   const state = reactive({
     loggedIn: false, 
     loading: true,
-    saveState: SaveState.Saved,
+    formSaveState: SaveState.Saved,
+    scheduleSaveState: SaveState.Saved,
   });
     
-  const saveStateMessage = computed(() => {
-    switch(state.saveState) {
+  const saveStateToText = (saveState) => {
+    switch(saveState) {
       case SaveState.Saved:
         return 'Saved ✅︎';
       case SaveState.Unsaved:
@@ -28,19 +30,48 @@
       default:
         return 'Error 🛑';
     }
+  };
+  const formSaveStateMessage = computed(() => {
+    return saveStateToText(state.formSaveState);
+  });
+  const scheduleSaveStateMessage = computed(() => {
+    return saveStateToText(state.scheduleSaveState);
   });
 
   const signup = reactive({
     pronouns: '',
-    schedule: {},
     discordUsername: '',
     notes: '',
     slotLength: '',
     username: ''
   });
 
-  const debounceSave = _.debounce(async () => {
-    state.saveState = SaveState.Saving;
+  const schedule = ref({});
+
+  const scheduleDebounceSave = _.debounce(async () => {
+    state.scheduleSaveState = SaveState.Saving;
+    try {
+      const url = `${props.nodeApi}/signup/schedule`;
+      const data = {
+        schedule: JSON.stringify(schedule.value),
+      };
+      const response = await fetch(url, {
+        method: 'PUT',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data),
+      });
+    } catch (error) {
+      console.error(error);
+      state.scheduleSaveState = SaveState.Error;
+    } finally {
+      state.scheduleSaveState = SaveState.Saved;
+    }
+  }, 1000);
+  const formDebounceSave = _.debounce(async () => {
+    state.formSaveState = SaveState.Saving;
     try {
       const url = `${props.nodeApi}/signup/text`;
       const data = {
@@ -58,10 +89,10 @@
         body: JSON.stringify(data),
       });
     } catch (error) {
-      console.log(error);
-      state.saveState = SaveState.Error;
+      console.error(error);
+      state.formSaveState = SaveState.Error;
     } finally {
-      state.saveState = SaveState.Saved;
+      state.formSaveState = SaveState.Saved;
     }
   }, 1000);
 
@@ -72,6 +103,17 @@
 
   const redirectToTwitch = () => {
     location.href = `${props.nodeApi}/twitch/auth`;
+  };
+  
+  const scheduleSlot = (slot) => {
+    const start = slot.start.ts;
+    const modifiedSchedule = { ...schedule.value };
+    if (Object.prototype.hasOwnProperty.call(modifiedSchedule, start)) {
+      modifiedSchedule[slot.start.ts] = (modifiedSchedule[start] + 1) % 3;
+    } else {
+      modifiedSchedule[start] = 1;
+    }
+    schedule.value = modifiedSchedule;
   };
 
   onMounted(async () => {
@@ -86,9 +128,8 @@
         throw new Error(`Failed to connect to ${url}.`);
       }
       const data = await response.json();
-      console.log('data', data);
+      schedule.value = JSON.parse(data.schedule);
       signup.pronouns = data.pronouns;
-      signup.schedule = JSON.parse(data.schedule);
       signup.discordUsername = data.discordUsername;
       signup.notes = data.notes;
       signup.slotLength = data.slotLength;
@@ -100,16 +141,20 @@
     } finally {
       state.loading = false;
       watch(signup, (changedSignup) => {
-        state.saveState = SaveState.Unsaved;
-        debounceSave();
+        state.formSaveState = SaveState.Unsaved;
+        formDebounceSave();
       });
+      watch(schedule, (changedSchedule) => {
+        state.scheduleSaveState = SaveState.Unsaved;
+        scheduleDebounceSave();
+      }, { deep: true });
     }
   });
 
 </script>
 
 <template>
-  <section class="a double" v-if="state.loggedIn">
+  <section class="a double login" v-if="state.loggedIn">
     <span class="login">
       <small>
         Signed in as {{signup.username}} <a :href="`${props.nodeApi}/twitch/logout`">Log out</a>
@@ -124,14 +169,26 @@
   <SignUpForm
     v-if="state.loggedIn && !state.loading"
     v-model="signup"
-    :saveState="saveStateMessage"
+    :saveState="formSaveStateMessage"
+  />
+  <SignUpSchedule
+    :startDate="currentEvent.event_start"
+    :endDate="currentEvent.event_end"
+    :schedule="schedule"
+    :saveState="scheduleSaveStateMessage"
+    @scheduleSlot="scheduleSlot"
   />
 </template>
 
 <style scoped>
+  section.login {
+    padding: 0.5rem;
+  }
+
   .login {
     float: right;
   }
+
   .twitch-login {
     background-color: rgb(145, 71, 255);
     color: white !important;

@@ -10,9 +10,10 @@
     'World Dominion',
     'Fully Loaded',
     'Believer',
-  ]
-  const tagline = 'NetHackathon VI: ' + taglines[Math.floor(Math.random() * taglines.length)]
-  document.getElementsByClassName('tagline')[0].innerHTML = tagline
+  ];
+  const tagline = 'NetHackathon VI: ' + taglines[Math.floor(Math.random() * taglines.length)];
+  const taglineDiv = document.getElementsByClassName('tagline')[0];
+  if (taglineDiv) taglineDiv.innerHTML = tagline;
 </script>
 <style>
   text {

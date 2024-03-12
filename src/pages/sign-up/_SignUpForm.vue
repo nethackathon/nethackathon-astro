@@ -16,6 +16,15 @@
 
 <template>
   <section class="c double">
+    <p class="save-state-message">{{saveState}}</p>
+    <p>
+      Fill out the form to sign up, the form is saved automatically.
+    </p>
+    <p>
+      We organize the event using Discord. Join the NetHackathon Discord server
+      at: <a href="https://discord.gg/PERAP8caeS">https://discord.gg/PERAP8caeS</a>
+      and introduce yourself!
+    </p>
     <form ref="form">
       <p>
         <label for="slotLength">Maximum slot length (most streamers will be assigned a 2 hours slot):</label><br>
@@ -58,7 +67,6 @@
         ></textarea>
       </p>
     </form>
-    <p class="save-state-message">{{saveState}}</p>
   </section>
 </template>
 

@@ -45,6 +45,7 @@ export function parseEvent(event) {
 
   return {
     eventStart: event.event_start,
+    eventEnd: event.event_end,
     signupsEnd: event.signup_end,
     beforeEvent,
     eventLive,
