@@ -52,16 +52,13 @@
     state.scheduleSaveState = SaveState.Saving;
     try {
       const url = `${props.nodeApi}/signup/schedule`;
-      const data = {
-        schedule: JSON.stringify(schedule.value),
-      };
       const response = await fetch(url, {
         method: 'PUT',
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(schedule.value),
       });
     } catch (error) {
       console.error(error);
@@ -106,6 +103,7 @@
   };
   
   const scheduleSlot = (slot) => {
+    console.log('scheduleSlot', slot);
     const start = slot.start.ts;
     const modifiedSchedule = { ...schedule.value };
     if (Object.prototype.hasOwnProperty.call(modifiedSchedule, start)) {
@@ -114,6 +112,7 @@
       modifiedSchedule[start] = 1;
     }
     schedule.value = modifiedSchedule;
+    console.log('modifiedSchedule', modifiedSchedule);
   };
 
   onMounted(async () => {
@@ -172,6 +171,7 @@
     :saveState="formSaveStateMessage"
   />
   <SignUpSchedule
+    v-if="state.loggedIn && !state.loading"
     :startDate="currentEvent.event_start"
     :endDate="currentEvent.event_end"
     :schedule="schedule"
