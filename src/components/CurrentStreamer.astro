@@ -1,6 +1,7 @@
 <section class="double a" id="current-streamer">
   <h2>Currently streaming: <a href="#" id="currently-streaming"></a></h2>
   <h3 id="up-next-h3">Up next: <a href="#" id="up-next"></a></h3>
+  <div id="twitch-embed"></div>
 </section>
 
 <style>
@@ -9,18 +10,21 @@
   }
 </style>
 
+<script src="../js/twitch-embed-v1.js" ></script>
+
 <script>
   import { startDate, data } from "../data/schedule.js";
   import { DateTime } from "luxon";
   import type { Streamer } from "../interfaces/streamer";
-  function getCurrentStreamer(schedule: Streamer[]) {
+
+  function getCurrentStreamer(schedule: Streamer[], twitchEmbed) : string {
     const currentStreamerSection = document.getElementById('current-streamer');
-    if (!currentStreamerSection) return;
+    if (!currentStreamerSection) return "";
     const eventStarted = (DateTime.now().ts >= startDate.toMillis());
     if (eventStarted) {
       currentStreamerSection.style.display = 'block';
     } else {
-      return
+      return "";
     }
     const now = DateTime.now().toMillis() + '';
     let current = 0;
@@ -35,13 +39,17 @@
     }
     let currentStreamer = schedule[current].username;
     let streamerLink = document.getElementById('currently-streaming');
-    if (!streamerLink) return;
+    if (!streamerLink) return "";
+
     streamerLink.setAttribute('href', `https://twitch.tv/${currentStreamer}`);
     streamerLink.innerText = currentStreamer;
+    if (twitchEmbed !== null)
+      twitchEmbed.setChannel(currentStreamer);
+
     if (next < schedule.length) {
       const nextStreamer = schedule[next].username;
       let nextLink = document.getElementById('up-next');
-      if (!nextLink) return;
+      if (!nextLink) return currentStreamer;
       nextLink.setAttribute('href', `https://twitch.tv/${nextStreamer}`);
       nextLink.innerText = nextStreamer;
     } else {
@@ -50,14 +58,23 @@
         upNextH3.style.display = 'none';
       }
     }
+
+    return currentStreamer;
   }
   window.addEventListener('load', async () => {
     const schedule = data.streamers.sort((a: Streamer, b: Streamer) => {
       return a.start_time.localeCompare(b.start_time);
     });
-    getCurrentStreamer(schedule);
+    let currentStreamer = getCurrentStreamer(schedule, null);
+    let twitchEmbed = new Twitch.Embed("twitch-embed", {
+      width: "100%",
+      height: 480,
+      channel: currentStreamer,
+      // TODO theme based on djinni
+    });
+
     window.setInterval(() => {
-      getCurrentStreamer(schedule);
+      getCurrentStreamer(schedule, twitchEmbed);
     }, 5000);
   });
 </script>
