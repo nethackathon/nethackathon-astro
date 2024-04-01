@@ -14,27 +14,15 @@ const response = await fetch(`${import.meta.env.NODE_API}/event/current`)
   .then((response) => response.json());
 const currentEvent = response.currentEvent;
 
-const eventObject = parseEvent(currentEvent); 
+const eventObject = parseEvent(currentEvent);
 
 ---
 <MainLayout currentPage="home">
-  { eventObject.beforeEvent && <EventCountdown currentEvent={eventObject} /> }
-  { eventObject.eventLive && <CurrentStreamer /> }
-  { eventObject.signupsOpen && <SignupCountdown currentEvent={eventObject} /> }
-  { eventObject.eventLive &&
+  <EventCountdown currentEvent={eventObject} />
   <section class="double b">
     <Streamers />
   </section>
   <section class="double c">
     <Schedule />
   </section>
-  <AscensionsDeaths />
-  <Livelog />
-  }
 </MainLayout>
-
-<style>
-  .hidden {
-    display: none;
-  }
-</style>

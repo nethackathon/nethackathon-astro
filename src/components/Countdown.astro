@@ -1,16 +1,16 @@
 ---
-
-const { startDate, spanId } = Astro.props;
-
+const { start, end } = Astro.props;
 ---
 
-<span
-  data-start={startDate}
-  id={spanId}
-  class="counter"
->
-  {startDate}
-</span>
+<section class="double a counter" data-start={start} data-end={end} >
+  <div>
+    <slot name="before-countdown"></slot>
+    <h2>
+      <span class="counter-inner">{start}</span>
+    </h2>
+    <slot name="after-countdown"></slot>
+  </div>
+</section>
 
 <script>
   import { DateTime, Interval } from 'luxon';
@@ -18,27 +18,35 @@ const { startDate, spanId } = Astro.props;
   function getTimeLeft(startDate) {
     let timeLeft = Interval.fromDateTimes(DateTime.now(), startDate)
       .toDuration(['days', 'hours', 'minutes', 'seconds', 'milliseconds']).toObject();
-    return `${timeLeft.days} days, ${timeLeft.hours} hours, ${timeLeft.minutes} minutes, and ${timeLeft.seconds} seconds`;
+    return `${timeLeft.days ?? 0} days, ${timeLeft.hours ?? 0} hours, ${timeLeft.minutes ?? 0} minutes, and ${timeLeft.seconds ?? 0} seconds`;
   }
 
-  function showCounters() {
-    const counters = document.getElementsByClassName('counter');
-    if (!counters.length) return;
-    for (const counter of counters) {
-      const startDate = DateTime.fromISO(counter.dataset.start);
-      counter.innerHTML = getTimeLeft(startDate);
+  function showCounters(counters) {
+    return function() {
+      for (const counter of counters) {
+        const now = DateTime.now();
+        const startDate = DateTime.fromISO(counter.dataset.start);
+        const endDate = DateTime.fromISO(counter.dataset.end);
+        if (now > startDate && (!endDate || now < endDate)) {
+          counter.querySelector('.counter-inner').innerHTML = getTimeLeft(endDate);
+          if (counter.classList.contains('hidden')) {
+            counter.classList.remove('hidden');
+          }
+        } else {
+          if (!counter.classList.contains('hidden')) {
+            counter.classList.add('hidden');
+          }
+        }
+      }
     }
   }
 
-  if (!window.setupCounter) {
-    window.setupCounter = true;
-    window.addEventListener('load', () => {
-      const counters = document.getElementsByClassName('counter');
-      if (!counters.length) return;
-      showCounters();
-      window.setInterval(() => {
-        showCounters();
-      }, 1000);
-    });
-  }
+  window.addEventListener('load', () => {
+    const counters = document.getElementsByClassName('counter');
+    const showCounterFn = showCounters(counters);
+    showCounterFn();
+    window.setInterval(() => {
+      showCounterFn();
+    }, 1000);
+  });
 </script>

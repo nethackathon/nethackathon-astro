@@ -1,18 +1,19 @@
 ---
-
 import Countdown from './Countdown.astro';
+import { DateTime } from 'luxon';
+
 const { currentEvent } = Astro.props;
 
+const start = DateTime.fromISO(currentEvent.eventStart).toMillis();
+const end = DateTime.fromISO(currentEvent.eventEnd).toMillis();
+const hours = (end - start) / 1000 / 60 / 60;
 ---
 
-<section class="double a">
-  <div>
-    <h2>
-      The {currentEvent.eventTitle} NetHackathon will start in <Countdown startDate={currentEvent.eventStart} spanId="event-countdown" />.
-    </h2>
-    <p>On <strong>{currentEvent.eventDates}</strong> Twitch content creators will stream NetHack continuously for over 48 hours!</p>
-  </div>
-</section>
-
-<script>
-</script>
+<Countdown start={currentEvent.signupsStart} end={currentEvent.eventStart}>
+  <p slot="before-countdown">
+    The {currentEvent.eventTitle} NetHackathon will start in:
+  </p>
+  <p slot="after-countdown">
+    On <strong>{currentEvent.eventDates}</strong> Twitch content creators will stream NetHack continuously for {hours} hours!
+  </p>
+</Countdown>

@@ -1,15 +1,15 @@
 import { DateTime } from 'luxon';
 
-// Expects ISO string representation of event start and end  
+// Expects ISO string representation of event start and end
 export function eventDateString(start, end) {
   const eventStart = new Date(start);
   const eventEnd = new Date(end);
   const fullMonth = { month: 'long' };
   const startMonth = eventStart.toLocaleString(undefined, fullMonth);
   const endMonth = eventEnd.toLocaleString(undefined, fullMonth);
-  return (startMonth === endMonth) ? 
+  return (startMonth === endMonth) ?
     `${startMonth} ${eventStart.getDate()} - ${eventEnd.getDate()}` :
-    `${startMonth} ${eventStart.getDate()} - ${endMonth} ${eventEnd.getDate()}`; 
+    `${startMonth} ${eventStart.getDate()} - ${endMonth} ${eventEnd.getDate()}`;
 }
 
 
@@ -46,6 +46,7 @@ export function parseEvent(event) {
   return {
     eventStart: event.event_start,
     eventEnd: event.event_end,
+    signupsStart: event.signup_start,
     signupsEnd: event.signup_end,
     beforeEvent,
     eventLive,

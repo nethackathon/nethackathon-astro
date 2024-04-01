@@ -1,7 +1,7 @@
 ---
-import { data } from "../data/schedule";
-//const response = await fetch('https://api.nethackathon.org/streamers');
-//const data = await response.json();
+// This version of the Streamers component gets the list of streamers from the API at build time.
+const response = await fetch('https://api.nethackathon.org/streamers');
+const data = await response.json();
 const usernames = data.streamers.sort((a, b) => {
   if (a.username.toUpperCase() < b.username.toUpperCase()) return -1;
   return 1;

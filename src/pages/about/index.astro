@@ -5,7 +5,7 @@ import { parseEvent } from '../../js/shared.js';
 
 const { currentEvent } = await fetch(`${import.meta.env.NODE_API}/event/current`)
   .then((response) => response.json());
-const eventObject = parseEvent(currentEvent); 
+const eventObject = parseEvent(currentEvent);
 ---
 <MainLayout currentPage="about">
   <section class="a">
@@ -37,7 +37,7 @@ const eventObject = parseEvent(currentEvent);
         greatest game you will ever play.</a></p>
   </section>
   <section style="padding: 0.5em;" aria-label="NetHack screenshot">
-    <img src={screenshot} alt="Screenshot of NetHack" style="width: 100%;" />
+    <img src={screenshot.src} alt="Screenshot of NetHack" style="width: 100%;" />
   </section>
   <section>
     <h2>When is the next event?</h2>
