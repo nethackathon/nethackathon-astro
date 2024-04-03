@@ -1,15 +1,16 @@
 <script setup lang="ts">
   import { computed } from 'vue';
   import { eventDateString } from '../../js/shared.js';
+  import { NHEvent } from '../../types/NHEvent.js';
 
-  const props = defineProps({
+  const props = defineProps<({
     nodeApi: String,
-    currentEvent: Object,
-  });
-  const signupStart = props.currentEvent.signup_start;
-  const signupEnd = props.currentEvent.signup_end;
-  const eventStart = props.currentEvent.event_start;
-  const eventEnd = props.currentEvent.event_end;
+    currentEvent: NHEvent,
+  })>();
+  const signupStart = props.currentEvent.signupsStart;
+  const signupEnd = props.currentEvent.signupsEnd;
+  const eventStart = props.currentEvent.eventStart;
+  const eventEnd = props.currentEvent.eventEnd;
 
   const signupsClosed = computed(() => {
     const now = new Date().toISOString();
@@ -34,16 +35,19 @@
     <p>We'll be continuing the characters started by the previous streamer and
     raiding the next streamer on the schedule. There will be
     <em>many deaths</em>, and, hopefully, at least one ascension.</p>
-    <p v-if="!signupsClosed"><strong>Sign up today!</strong> To get started
-      <input type="button" class="twitch-login" @click="redirectToTwitch" value="Log In with Twitch" /></p>
     <h3 v-if="signupsClosed">Sign-ups are closed, but please participate in the next event!</h3>
+    <p>
+      <span v-if="!signupsClosed">
+        <strong>Sign up today!</strong> To get started
+      </span>
+      <span v-if="signupsClosed">
+        Streamers sign-in
+      </span>
+      <input type="button" class="twitch-login" @click="redirectToTwitch" value="Log In with Twitch" /></p>
   </section>
 </template>
 
 <style scoped>
-  .login {
-    float: right;
-  }
   .twitch-login {
     background-color: rgb(145, 71, 255);
     color: white !important;

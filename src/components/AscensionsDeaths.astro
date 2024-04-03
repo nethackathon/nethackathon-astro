@@ -1,15 +1,42 @@
-<section id="ascensions" class="hidden">
-  <h2>Ascensions</h2>
+---
+const { currentEvent } = Astro.props;
+---
+
+<section class="c show-during" data-start={currentEvent.eventStart}>
+  <h3>Ascensions</h3>
+  <div id="ascensions"></div>
 </section>
-<section id="deaths" class="hidden">
-  <h2>Deaths</h2>
+<section class="a show-during" data-start={currentEvent.eventStart}>
+  <h3>Deaths</h3>
+  <div id="deaths"></div>
 </section>
+
+<style>
+  #deaths, #ascensions {
+    font-size: 12pt;
+  }
+</style>
 
 <script>
   async function getEndedGames () {
-    return Promise.all([
+    const response = await Promise.all([
       fetch(`https://api.nethackathon.org/endedGames`)
     ])
+    const promises = response.map((r) => r.json());
+    const json = await Promise.all(promises)
+    const endedGames = [].concat.apply([], json)
+      .sort((l, m) => parseInt(m.time) - parseInt(l.time) );
+    const deaths = endedGames
+      .filter((l) => l.message.indexOf('ascended') === -1);
+    const ascensions = endedGames
+      .filter((l) => l.message.indexOf('ascended') > -1);
+    const ascensionSection = document.getElementById('ascensions');
+    const deathSection = document.getElementById('deaths');
+    if (!ascensionSection || !deathSection) return;
+    ascensionSection.innerHTML = '';
+    deathSection.innerHTML = '';
+    ascensionSection.appendChild(getListItems(ascensions));
+    deathSection.appendChild(getListItems(deaths));
   }
   function getListItems(messages) {
     const list = document.createElement('ul');
@@ -26,27 +53,9 @@
     return list;
   }
   window.addEventListener('load', async () => {
-    const response = await getEndedGames();
-    const promises = response.map((r) => r.json());
-    const json = await Promise.all(promises)
-    const endedGames = [].concat.apply([], json)
-      .sort((l, m) => parseInt(m.time) - parseInt(l.time) );
-    const deaths = endedGames
-      .filter((l) => l.message.indexOf('ascended') === -1);
-    const ascensions = endedGames
-      .filter((l) => l.message.indexOf('ascended') > -1);
-    const ascensionSection = document.getElementById('ascensions');
-    const deathSection = document.getElementById('deaths');
-    if (!ascensionSection || !deathSection) return;
-    ascensionSection.appendChild(getListItems(ascensions));
-    deathSection.appendChild(getListItems(deaths));
-    ascensionSection.className = 'c';
-    deathSection.className = 'a';
+    await getEndedGames();
+    window.setInterval(async () => {
+      await getEndedGames();
+    }, 5000);
   });
 </script>
-
-<style>
-  .hidden {
-    display: none;
-  }
-</style>

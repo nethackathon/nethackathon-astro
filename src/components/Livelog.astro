@@ -1,5 +1,9 @@
-<section id="livelog-section" class="hidden double">
-  <h2>Livelog</h2>
+---
+const { currentEvent } = Astro.props;
+---
+
+<section id="livelog-section" class="b double show-during" data-start={currentEvent.eventStart}>
+  <h3>Livelog</h3>
   <div id="livelog-textarea"></div>
 </section>
 
@@ -8,34 +12,41 @@
     display: none;
   }
   #livelog-textarea {
-    width: 90%;
-    margin: 0 auto;
-    height: 60vh;
-    overflow: scroll;
-    white-space: pre;
-    font-size: small;
+    font-size: 12pt;
   }
 </style>
 
 <script>
+  function getListItems(messages) {
+    const list = document.createElement('ul');
+    messages.forEach((m) => {
+      const item = document.createElement('li');
+      item.innerHTML = m.message;
+      list.appendChild(item);
+    });
+    return list;
+  }
+
   async function getLivelog () {
-    return Promise.all([
+    const responses =  await Promise.all([
       fetch(`https://api.nethackathon.org/livelog`)
     ])
-  }
-  window.addEventListener('load', async () => {
-    const response = await getLivelog();
-    const promises = response.map((r) => r.json());
+    const promises = responses.map((r) => r.json());
     const json = await Promise.all(promises)
     const livelog = [].concat.apply([], json)
-      .sort((l, m) => m.time - l.time )
-      .map((l) => `- ${l.message}`)
-      .join('\n');
+      .sort((l, m) => m.time - l.time );
+    const livelogList = getListItems(livelog);
     const livelogSection = document.getElementById('livelog-section');
     const livelogTextarea = document.getElementById('livelog-textarea');
     if (!livelogSection || !livelogTextarea) return;
-    livelogTextarea.innerText = livelog;
-    livelogSection.className = 'b double';
+    livelogTextarea.innerText = '';
+    livelogTextarea.appendChild(livelogList);
+  }
+  window.addEventListener('load', async () => {
+    await getLivelog();
+    window.setInterval(async () => {
+      await getLivelog();
+    }, 5000);
   });
 </script>
 

@@ -62,7 +62,6 @@
           id="notes"
           rows="5"
           cols="50"
-          filled
           v-model="model.notes"
         ></textarea>
       </p>

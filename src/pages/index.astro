@@ -1,13 +1,9 @@
 ---
 
-import MainLayout from '../layouts/MainLayout.astro';
 import CurrentStreamer from '../components/CurrentStreamer.astro';
+import MainLayout from '../layouts/MainLayout.astro';
 import EventCountdown from '../components/EventCountdown.astro';
-import SignupCountdown from '../components/SignupCountdown.astro';
-import Streamers from '../components/Streamers.astro';
 import Schedule from '../components/Schedule.astro';
-import AscensionsDeaths from '../components/AscensionsDeaths.astro';
-import Livelog from '../components/Livelog.astro';
 import { parseEvent } from '../js/shared.js';
 
 const response = await fetch(`${import.meta.env.NODE_API}/event/current`)
@@ -16,12 +12,15 @@ const currentEvent = response.currentEvent;
 
 const eventObject = parseEvent(currentEvent);
 
+const streamersRes = await fetch(`${import.meta.env.NODE_API}/event/current/schedule`);
+const schedule = await streamersRes.json();
+const streamers = schedule.map((s) => s.username);
+const deduped = streamers.filter((u, i) => streamers.indexOf(u) === i);
+
 ---
 <MainLayout currentPage="home">
-  <EventCountdown currentEvent={eventObject} />
-  <section class="double b">
-    <Streamers />
-  </section>
+  <EventCountdown currentEvent={eventObject} nStreamers={deduped.length} />
+  <CurrentStreamer currentEvent={eventObject} />
   <section class="double c">
     <Schedule />
   </section>
