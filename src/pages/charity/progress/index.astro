@@ -1,0 +1,88 @@
+<div class="progress-container">
+  <div class="progress-display">
+    <div class="display-current">
+      <span class="amount-current">0</span><br>Raised by <span class="amount-supporters">0</span> Supporters
+    </div>
+    <div class="display-goal">
+      <span class="amount-goal">0D</span><br>Goal
+    </div>
+  </div>
+  <div class="progress">
+    <div class="progress-bar">
+    </div>
+  </div>
+</div>
+
+<style>
+  .progress-container {
+    background-color: #444;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    font-family: monospace;
+    color: white;
+  }
+
+  .progress-display {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: 0.4rem;
+  }
+
+  .display-goal {
+    text-align: end;
+  }
+
+  .amount-current, .amount-goal, .amount-supporters {
+    font-weight: bolder;
+  }
+
+  .progress {
+    height: 1rem;
+    display: flex;
+    background-color: #AAA;
+    border-radius: 0.3rem;
+  }
+
+  .progress-bar {
+    width: 0%;
+    background-color: green;
+    border-radius: 0.3rem;
+    text-align: center;
+    color: white;
+  }
+</style>
+
+<script>
+  async function getDonations(updateFn) {
+    const response = await fetch("https://api.nethackathon.org/charity/progress");
+    const data = await response.json();
+    updateFn(data);
+  }
+
+  function formatAmount(value) {
+    const str = Number(value / 100).toFixed(2);
+    return `$${str} USD`;
+  }
+
+  function updateGoal(progressBars) {
+    return function(data) {
+      const percentage = 100.0 * data.raised / data.goalAmount;
+      for (const bar of progressBars) {
+        bar.querySelector(".progress-bar").style.width = `${percentage}%`;
+        bar.querySelector(".amount-current").innerHTML = formatAmount(data.raised);
+        bar.querySelector(".amount-goal").innerHTML = formatAmount(data.goalAmount);
+        bar.querySelector(".amount-supporters").innerHTML = data.supporters;
+      }
+    }
+  }
+
+  window.addEventListener('load', () => {
+    const progressBar = document.getElementsByClassName("progress-container");
+    const updateGoalFn = updateGoal(progressBar);
+    getDonations(updateGoalFn);
+    window.setInterval(() => {
+      getDonations(updateGoalFn);
+    }, 5000);
+  });
+</script>
