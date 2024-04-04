@@ -16,7 +16,8 @@ const { currentEvent } = await response.json();
   </section>
   <section class="b double">
     <h2>Give!</h2>
-    <p>For more information about {currentEvent.charity_name} and to donate, go to <a href={currentEvent.giving_url}>{currentEvent.giving_url}</a>.</p>
+    <p>For more information about {currentEvent.charity_name} and to donate, click the link:</p>
+    <h3><a href={currentEvent.giving_url}>{currentEvent.charity_name}</a></h3>
     <p>Thank you for your support!</p>
   </section>
 </MainLayout>
