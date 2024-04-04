@@ -14,6 +14,10 @@
 </div>
 
 <style>
+  html, body {
+    background-color: #000;
+  }
+
   .progress-container {
     background-color: #444;
     padding: 1rem;
@@ -78,6 +82,11 @@
   }
 
   window.addEventListener('load', () => {
+    const colorParam = new URLSearchParams(window.location.search).get("color");
+    if (colorParam) {
+      document.body.style.backgroundColor = colorParam;
+      document.documentElement.style.backgroundColor = colorParam;
+    }
     const progressBar = document.getElementsByClassName("progress-container");
     const updateGoalFn = updateGoal(progressBar);
     getDonations(updateGoalFn);
