@@ -121,10 +121,10 @@ const { currentEvent } = Astro.props;
     }
 
     if (twitchVideo !== null)
-      twitchVideo.src = `https://player.twitch.tv/?channel=${currentStreamer}&parent=localhost&autoplay=false`
+      twitchVideo.src = `https://player.twitch.tv/?channel=${currentStreamer}&parent=nethackathon.org&autoplay=true`
 
     if (twitchChat !== null)
-      twitchChat.src = `https://www.twitch.tv/embed/${currentStreamer}/chat?parent=localhost`
+      twitchChat.src = `https://www.twitch.tv/embed/${currentStreamer}/chat?parent=nethackathon.org`
 
     if (next < schedule.length) {
       const nextStreamer = schedule[next].username;
