@@ -32,13 +32,13 @@
       </p>
       <SignUpCheckItem instructions-height="4em" v-model="model.available">
         <template #description>
-          <strong>You have been scheduled to participate {{scheduledTime}}, are you available to stream during this time?</strong>
+          You have been scheduled to participate {{scheduledTime}}, are you available to stream during this time?
         </template>
       </SignUpCheckItem>
       <SignUpCheckItem instructions-height="5em" v-model="model.raid" v-if="props.nextStreamer && props.nextStreamer.length">
         <template #description>
-          <strong>When you are done with your segment you will raid {{props.nextStreamer}} to bring your viewers to
-            their channel.</strong>
+          When you are done with your segment you will raid {{props.nextStreamer}} to bring your viewers to
+            their channel.
         </template>
         <template #instructions>
           <p>
@@ -49,7 +49,7 @@
       </SignUpCheckItem>
       <SignUpCheckItem instructions-height="6em" v-model="model.raidPermissions" v-if="props.nextStreamer && props.nextStreamer.length">
         <template #description>
-          <strong>Do you have raids turned on in your Twitch settings so the previous streamer can raid you?</strong>
+          Do you have raids turned on in your Twitch settings so the previous streamer can raid you?
         </template>
         <template #instructions>
           <p>
@@ -61,7 +61,7 @@
       </SignUpCheckItem>
       <SignUpCheckItem instructions-height="5em" v-model="model.testStream">
         <template #description>
-          <strong>Have you set up OBS and done a test stream?</strong>
+          Have you set up OBS and done a test stream?
         </template>
         <template #instructions>
           <p>
@@ -72,12 +72,12 @@
       </SignUpCheckItem>
       <SignUpCheckItem instructions-height="4em" v-model="model.vodPermission">
         <template #description>
-          <strong>We would like to take VoDs and clips from the event and put them in a YouTube playlist and on the website, do we have your permission to post your content?</strong>
+          We would like to take VoDs and clips from the event and put them in a YouTube playlist and on the website, do we have your permission to post your content?
         </template>
       </SignUpCheckItem>
       <SignUpCheckItem instructions-height="6em" v-model="model.vodsOn">
         <template #description>
-          <strong>(If yes) Have you turned on VoDs in Twitch so we can download your segment?</strong>
+          (If yes) Have you turned on VoDs in Twitch so we can download your segment?
         </template>
         <template #instructions>
           <p>
@@ -89,7 +89,7 @@
       </SignUpCheckItem>
       <SignUpCheckItem instructions-height="18em" v-model="model.hardfoughtAccount">
         <template #description>
-          <strong>We are going to play NetHack on the hardfought.org server, do you have a Hardfought account?</strong>
+          We are going to play NetHack on the hardfought.org server, do you have a Hardfought account?
         </template>
         <template #instructions>
           <p>
@@ -110,7 +110,7 @@
       </SignUpCheckItem>
       <SignUpCheckItem instructions-height="8em" v-model="model.nethackrc">
         <template #description>
-          <strong>Have you set up and tested your NetHack configuration (nethackrc) for NetHack 3.7 on Hardfought?</strong>
+          Have you set up and tested your NetHack configuration (nethackrc) for NetHack 3.7 on Hardfought?
         </template>
         <template #instructions>
           <p>
@@ -123,8 +123,8 @@
       </SignUpCheckItem>
       <SignUpCheckItem instructions-height="8em" v-model="model.sharedLogin">
         <template #description>
-          <strong>We will be logging into a shared `nethackathon` account and using a special NetHackathon build of
-          NetHack for the tournament, have you tested logging in with the shared account?</strong>
+          We will be logging into a shared `nethackathon` account and using a special NetHackathon build of
+          NetHack for the tournament, have you tested logging in with the shared account?
         </template>
         <template #instructions>
           <p>
@@ -136,11 +136,11 @@
           </p>
         </template>
       </SignUpCheckItem>
-      <SignUpCheckItem instructions-height="20em" v-model="model.copyrc">
+      <SignUpCheckItem instructions-height="24em" v-model="model.copyrc">
         <template #description>
-          <strong>At the start of your assigned slot, you will want to copy your NetHack configuration (nethackrc) from
+          At the start of your assigned slot, you will want to copy your NetHack configuration (nethackrc) from
           the "NetHack 3.7.0-hdf" nethackrc that you have already configured and tested. Have you practiced copying your
-          config from your account to the "nethackathon" account?</strong>
+          config from your account to the "nethackathon" account?
         </template>
         <template #instructions>
           <p>
@@ -163,18 +163,18 @@
           </ol>
           <p>
             After completing those four steps, the nethackathon account will have the same NetHack configuration as the
-            one you tested. Because each streamer will be copying their configuration over, you will have to do this
-            at the beginning of your segment.
+            one you tested. <em>Because each streamer will be copying their configuration over, you will have to do this
+            at the beginning of your segment.</em>
           </p>
         </template>
       </SignUpCheckItem>
-      <h3>(Optional) We are going to collect money for a charity during the event, please suggest a charity for us to donate to and we'll pick one at random from the suggestions.</h3>
+      <p>(Optional) We are going to collect money for a charity during the event, please suggest a charity for us to donate to and we'll pick one at random from the suggestions.</p>
       <p>
         <input style="width: 100%;" v-model="model.suggestedCharity" type="text" placeholder="Charity name and website">
       </p>
       <SignUpCheckItem instructions-height="4em" v-model="model.rememberToSave">
         <template #description>
-          <strong>Don't forget to save!</strong>
+          <em>Don't forget to Save!</em>
         </template>
       </SignUpCheckItem>
     </form>

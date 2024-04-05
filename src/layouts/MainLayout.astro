@@ -4,13 +4,12 @@ import Charity from '../components/Charity.astro';
 import Logo from '../components/Logo.astro';
 import MagicLamp from '../components/MagicLamp.astro';
 import NavComponent from '../components/Nav.astro';
-import Tagline from '../components/Tagline.astro';
 import favicon from '../images/favicon.png';
 const { currentPage } = Astro.props;
-const response = await fetch(`${import.meta.env.NODE_API}/events`)
-  .then((response) => response.json());
-const currentEvent = response.events[response.events.length - 1];
-const lastEvent = response.events[response.events.length - 2];
+let response = await fetch(`${import.meta.env.NODE_API}/event/current`);
+const { currentEvent } = await response.json();
+response = await fetch(`${import.meta.env.NODE_API}/event/last`);
+const { lastEvent } = await response.json();
 
 ---
   <!DOCTYPE html>
@@ -30,9 +29,8 @@ const lastEvent = response.events[response.events.length - 2];
     </head>
     <body>
       <header>
-        { currentEvent.charity && <Charity /> }
+        { currentEvent.charity_name && <Charity currentEvent={currentEvent} /> }
         <Logo />
-        { false && <Tagline /> }
         <NavComponent currentEvent={currentEvent} lastEvent={lastEvent} currentPage={currentPage} />
         <slot name="nav" />
       </header>
@@ -98,7 +96,7 @@ const lastEvent = response.events[response.events.length - 2];
   }
   @media (max-width: 1263px) {
     body {
-      padding: 1em 2em 2em 2em;
+      padding: 0.5em 1em 1em 1em;
     }
   }
   @media (min-width: 960px) {
@@ -131,6 +129,10 @@ const lastEvent = response.events[response.events.length - 2];
   section[data-theme='light'] {
     border-color: var(--color-dark);
   }
+  .hidden {
+    display: none !important;
+  }
+
   @media (prefers-color-scheme: dark) {
     nav a:hover {
       background-color: var(--color-dark-highlight);
@@ -146,19 +148,14 @@ const lastEvent = response.events[response.events.length - 2];
     flex-wrap: wrap;
     justify-content: center;
     min-height: 48px;
-    padding: 0 auto;
   }
   nav a {
-    display: inline-block;
     line-height: 48px;
     height: 48px;
-    font-size: x-large;
+    font-size: 14pt;
     padding: 0 1em;
   }
   nav a.active {
     color: var(--color-a);
-  }
-  .hidden {
-    display: none !important;
   }
 </style>

@@ -7,7 +7,9 @@
     "astro": "astro --port 4321",
     "dev": "astro dev --port 4321",
     "preview": "astro preview --port 4321",
-    "start": "astro dev --port 4321"
+    "start": "astro dev --port 4321",
+    "deploy": "npm run build && npm run deploy:copy",
+    "deploy:copy": "rsync -rlgoDz -e 'ssh -i /Users/mcknight/personal/aws/nethackathon-us.pem' --exclude '/annotate' --exclude '/utils' /Users/mcknight/personal/nethackathon/nethackathon-astro/dist/ ubuntu@nethackathon.org:/var/www/html/nethackathon/"
   },
   "dependencies": {
     "@mdi/font": "5.9.55",

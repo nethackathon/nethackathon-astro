@@ -8,10 +8,10 @@
   </colgroup>
   <thead>
     <tr>
-      <th></th>
+      <th class="hide-second"></th>
       <th>Date</th>
       <th>Channel</th>
-      <th>Notes</th>
+      <th class="hide-first">Notes</th>
     </tr>
   </thead>
   <tbody id="schedule-tbody"></tbody>
@@ -39,6 +39,16 @@
   tr.current-streamer {
     background-color: rgba(150, 149, 248, 0.5);
   }
+  @media (max-width: 800px) {
+    .hide-first {
+      display: none;
+    }
+  }
+  @media (max-width: 515px) {
+    .hide-second {
+      display: none;
+    }
+  }
 </style>
 
 <script>
@@ -55,15 +65,16 @@
   async function loadSchedule() {
     const scheduleTbody = document.getElementById('schedule-tbody');
     const response = await fetch('https://api.nethackathon.org/event/current/schedule');
+    const data = await response.json();
     document.getElementById('time-zone').textContent = DateTime.local().offsetNameShort;
     let lastWeekday = '';
-    const data = await response.json();
     data.forEach((streamer) => {
       const tr = document.createElement('tr');
       tr.classList.add('schedule-row');
       const startTime = parseStartTime(streamer.start_time);
       const td0 = document.createElement('td');
       td0.classList.add('weekday');
+      td0.classList.add('hide-second');
       if (startTime.day !== lastWeekday) {
         lastWeekday = startTime.day;
         td0.innerHTML = startTime.day;
@@ -78,6 +89,7 @@
       td2.innerHTML = `<a href="https://twitch.tv/${streamer.username}">${streamer.username}</a>`;
       tr.appendChild(td2);
       const td3 = document.createElement('td');
+      td3.classList.add('hide-first');
       td3.innerHTML = (streamer.notes) ? streamer.notes : '';
       tr.appendChild(td3);
       scheduleTbody.appendChild(tr);

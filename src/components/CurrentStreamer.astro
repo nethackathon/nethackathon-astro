@@ -5,31 +5,86 @@ const { currentEvent } = Astro.props;
 <section class="double a" id="current-streamer" data-start={currentEvent.eventStart} >
   <h2>Currently streaming: <a href="#" id="currently-streaming"></a></h2>
   <h3 id="up-next-h3">Up next: <a href="#" id="up-next"></a></h3>
-  <div id="twitch-embed"></div>
+</section>
+<section class="double b" id="twitch-embed">
+  <div class="twitch">
+    <div class="twitch-video">
+      <iframe
+          id="twitch-video-iframe"
+          src="https://twitch.tv"
+          frameborder="0"
+          scrolling="no"
+          allowfullscreen="true"
+          height="100%"
+          width="100%">
+      </iframe>
+    </div>
+    <div class="twitch-chat">
+      <iframe
+          id="twitch-chat-iframe"
+          frameborder="0"
+          scrolling="no"
+          src="https://twitch.tv"
+          height="100%"
+          width="100%">
+      </iframe>
+    </div>
+  </div>
 </section>
 
 <style>
-  #current-streamer {
+  #current-streamer, #twitch-embed {
     display: none;
   }
-</style>
 
-<script src="../js/twitch-embed-v1.js" ></script>
+  .twitch .twitch-video {
+    padding-top: 56.25%;
+    position: relative;
+    height: 0;
+  }
+
+  .twitch .twitch-video iframe {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+  }
+
+  .twitch .twitch-chat {
+    height: 400px;
+  }
+
+  .twitch .twitch-chat iframe {
+    width: 100%;
+    height: 100%;
+  }
+
+  @media screen and (min-width: 850px) {
+    .twitch {
+      position: relative;
+    }
+
+    .twitch .twitch-video {
+      width: 75%;
+      padding-top: 42.1875%;
+    }
+
+    .twitch .twitch-chat {
+      width: 25%;
+      height: auto;
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+    }
+  }
+</style>
 
 <script>
   import { DateTime } from "luxon";
   import type { Streamer } from "../interfaces/streamer";
 
-  function getCurrentStreamer(schedule: Streamer[], twitchEmbed) : string {
-    const currentStreamerSection = document.getElementById('current-streamer');
-    if (!currentStreamerSection) return "";
-    const eventStart = currentStreamerSection.dataset.start;
-    const eventStarted = DateTime.now() >= DateTime.fromISO(eventStart);
-    if (eventStarted) {
-      currentStreamerSection.style.display = 'block';
-    } else {
-      return "";
-    }
+  function getCurrentStreamer(schedule: Streamer[], curStreamer) : string {
     const now = DateTime.now();
     let current = 0;
     let next = 1;
@@ -42,13 +97,34 @@ const { currentEvent } = Astro.props;
       }
     }
     let currentStreamer = schedule[current].username;
-    let streamerLink = document.getElementById('currently-streaming');
-    if (!streamerLink) return "";
+    // If we've already run this and there is no new streamer, there is nothing to be done
+    if (curStreamer === currentStreamer) return currentStreamer;
 
-    streamerLink.setAttribute('href', `https://twitch.tv/${currentStreamer}`);
-    streamerLink.innerText = currentStreamer;
-    if (twitchEmbed !== null)
-      twitchEmbed.setChannel(currentStreamer);
+    const currentStreamerSection = document.getElementById('current-streamer');
+    const twitchEmbedStreamerSection = document.getElementById('twitch-embed');
+    const twitchVideo = document.getElementById('twitch-video-iframe');
+    const twitchChat = document.getElementById('twitch-chat-iframe');
+    let streamerLink = document.getElementById('currently-streaming');
+
+    const eventStart = currentStreamerSection.dataset.start;
+    const eventStarted = DateTime.now() >= DateTime.fromISO(eventStart);
+    if (eventStarted) {
+      currentStreamerSection.style.display = 'block';
+      twitchEmbedStreamerSection.style.display = 'block';
+    } else {
+      return '';
+    }
+
+    if (streamerLink) {
+      streamerLink.setAttribute('href', `https://twitch.tv/${currentStreamer}`);
+      streamerLink.innerText = currentStreamer;
+    }
+
+    if (twitchVideo !== null)
+      twitchVideo.src = `https://player.twitch.tv/?channel=${currentStreamer}&parent=localhost&autoplay=false`
+
+    if (twitchChat !== null)
+      twitchChat.src = `https://www.twitch.tv/embed/${currentStreamer}/chat?parent=localhost`
 
     if (next < schedule.length) {
       const nextStreamer = schedule[next].username;
@@ -69,18 +145,12 @@ const { currentEvent } = Astro.props;
     const response = await fetch('https://api.nethackathon.org/event/current/schedule');
     const data = await response.json();
     const schedule = data.sort((a: Streamer, b: Streamer) => {
-      return a.start_time.localeCompare(b.start_time);
-    });
-    let currentStreamer = getCurrentStreamer(schedule, null);
-    let twitchEmbed = new Twitch.Embed("twitch-embed", {
-      width: "100%",
-      height: 480,
-      channel: currentStreamer,
-      // TODO theme based on djinni
-    });
+      return a.start_time.localeCompare(b.start_time); });
+    let currentStreamer = '';
+    currentStreamer = getCurrentStreamer(schedule, currentStreamer);
 
     window.setInterval(() => {
-      getCurrentStreamer(schedule, twitchEmbed);
+      currentStreamer = getCurrentStreamer(schedule, currentStreamer);
     }, 5000);
   });
 </script>
