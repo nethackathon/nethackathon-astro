@@ -2,13 +2,14 @@
   import {DateTime} from 'luxon';
   import {computed} from 'vue';
   import SignUpCheckItem from './_SignUpCheckItem.vue';
+  import SignUpSaveState from './_SignUpSaveState.vue';
   const model = defineModel();
   const props = defineProps<({
     username: string,
     startTime: string,
     endTime: string,
     nextStreamer: string | null,
-    saveState: String,
+    saveState: number,
   })>();
   const scheduledTime = computed(() => {
     const startTime = DateTime.fromISO(props.startTime);
@@ -22,7 +23,7 @@
 
 <template>
   <section class="c double">
-    <p class="save-state-message">{{saveState}}</p>
+    <SignUpSaveState :saveState="props.saveState" />
     <form ref="form">
       <h3>
         Thank you for signing up for the Spring 2024 event!

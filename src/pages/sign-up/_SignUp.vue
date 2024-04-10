@@ -2,19 +2,15 @@
 import SignIn from './_SignIn.vue';
 import SignUpChecklist from './_SignUpChecklist.vue';
 import SignUpForm from './_SignUpForm.vue';
+import SignUpMedia from './_SignUpMedia.vue';
 import SignUpSchedule from './_SignUpSchedule.vue';
+import SignUpSurvey from './_SignUpSurvey.vue';
 import type {Interval} from 'luxon';
 import type {NHEvent} from '../../types/NHEvent';
 import type {Ref} from 'vue';
+import {SaveState} from './_SaveState';
 import {computed, onMounted, reactive, ref, watch} from 'vue';
 import {debounce} from 'lodash-es';
-
-const SaveState = {
-  Saved: 0,
-  Unsaved: 1,
-  Saving: 2,
-  Error: 3,
-};
 
 const state = reactive({
   loggedIn: false,
@@ -22,35 +18,7 @@ const state = reactive({
   formSaveState: SaveState.Saved,
   scheduleSaveState: SaveState.Saved,
   checklistSaveState: SaveState.Saved,
-});
-
-const saveStateToText = (saveState: number) => {
-  switch (saveState) {
-    case SaveState.Saved:
-      return 'Saved ✅︎';
-    case SaveState.Unsaved:
-      return 'Unsaved 🟡';
-    case SaveState.Saving:
-      return 'Saving 🔄';
-    default:
-      return 'Error 🛑';
-  }
-};
-const showChecklist = computed(() => {
-  return (
-      !props.currentEvent.signupsOpen &&
-          signup.startTime &&
-          signup.endTime
-  );
-});
-const formSaveStateMessage = computed(() => {
-  return saveStateToText(state.formSaveState);
-});
-const scheduleSaveStateMessage = computed(() => {
-  return saveStateToText(state.scheduleSaveState);
-});
-const checklistSaveStateMessage = computed(() => {
-  return saveStateToText(state.scheduleSaveState);
+  surveySaveState: SaveState.Saved,
 });
 
 const signup = reactive({
@@ -79,6 +47,15 @@ const checklist = ref({
   rememberToSave: false,
 });
 
+const survey = ref({
+  rumors: '',
+  tshirt: '',
+  gravestone: '',
+  notes: '',
+  contactPermission: false,
+  contact: ''
+});
+
 // 0 = not available, 1 = available, 2 = preferred
 type Schedule = {
   [timestamp: number]: 0 | 1 | 2;
@@ -102,6 +79,25 @@ const scheduleDebounceSave = debounce(async () => {
     state.scheduleSaveState = SaveState.Error;
   } finally {
     state.scheduleSaveState = SaveState.Saved;
+  }
+}, 1000);
+const surveyDebounceSave = debounce(async () => {
+  state.surveySaveState = SaveState.Saving;
+  try {
+    const url = `${nodeApi}/signup/survey`;
+    await fetch(url, {
+      method: 'PUT',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(survey.value),
+    });
+  } catch (error) {
+    console.error(error);
+    state.surveySaveState = SaveState.Error;
+  } finally {
+    state.surveySaveState = SaveState.Saved;
   }
 }, 1000);
 const checklistDebounceSave = debounce(async () => {
@@ -149,7 +145,7 @@ const formDebounceSave = debounce(async () => {
   }
 }, 1000);
 
-const isDev = false;
+const isDev = true;
 const nodeApi = (isDev) ? 'http://localhost:3000' : 'https://api.nethackathon.org';
 const props = defineProps<({
   currentEvent: NHEvent,
@@ -167,8 +163,18 @@ const scheduleSlot = (slot: Interval) => {
   schedule.value = modifiedSchedule;
 };
 
+const currentPath = ref('/');
+
+const currentView = computed(() => {
+  return currentPath.value.slice(1) || '/'
+});
+
 onMounted(async () => {
   try {
+    currentPath.value = window.location.hash;
+    window.addEventListener('hashchange', () => {
+      currentPath.value = window.location.hash;
+    });
     const url = `${nodeApi}/signup`;
     state.loading = true;
     const response = await fetch(url, {
@@ -181,6 +187,7 @@ onMounted(async () => {
     const data = await response.json();
     schedule.value = JSON.parse(data.schedule);
     checklist.value = JSON.parse(data.checklist);
+    survey.value = JSON.parse(data.survey);
     signup.pronouns = data.pronouns;
     signup.discordUsername = data.discordUsername;
     signup.notes = data.notes;
@@ -207,12 +214,23 @@ onMounted(async () => {
       state.checklistSaveState = SaveState.Unsaved;
       checklistDebounceSave();
     }, {deep: true});
+    watch(survey, () => {
+      state.surveySaveState = SaveState.Unsaved;
+      surveyDebounceSave();
+    }, {deep: true});
   }
 });
 
 </script>
 
 <template>
+  <nav class="sub">
+    <a href="#/">Sign Up</a>
+    <a href="#/schedule">Schedule</a>
+    <a href="#/checklist">Checklist</a>
+    <a href="#/media">Media</a>
+    <a href="#/survey">Survey</a>
+  </nav>
   <section class="a double login" v-if="state.loggedIn">
     <span class="login">
       <small>
@@ -226,26 +244,34 @@ onMounted(async () => {
       :currentEvent="props.currentEvent"
   />
   <SignUpChecklist
-      v-if="state.loggedIn && !state.loading && showChecklist"
+      v-if="state.loggedIn && !state.loading && currentView === '/checklist'"
       :nextStreamer="signup.nextStreamer"
       :username="signup.username"
       :startTime="signup.startTime"
       :endTime="signup.endTime"
       v-model="checklist"
-      :saveState="checklistSaveStateMessage"
+      :saveState="state.checklistSaveState"
   />
   <SignUpForm
-      v-if="state.loggedIn && !state.loading"
+      v-if="state.loggedIn && !state.loading && currentView === '/'"
       v-model="signup"
-      :saveState="formSaveStateMessage"
+      :saveState="state.formSaveState"
+  />
+  <SignUpSurvey
+      v-if="state.loggedIn && !state.loading && currentView === '/survey'"
+      v-model="survey"
+      :saveState="state.surveySaveState"
   />
   <SignUpSchedule
-      v-if="state.loggedIn && !state.loading && currentEvent.signupsOpen"
+      v-if="state.loggedIn && !state.loading && currentView === '/schedule'"
       :startDate="props.currentEvent.eventStart"
       :endDate="props.currentEvent.eventEnd"
       :schedule="schedule"
-      :saveState="scheduleSaveStateMessage"
+      :saveState="state.scheduleSaveState"
       @scheduleSlot="scheduleSlot"
+  />
+  <SignUpMedia
+      v-if="state.loggedIn && !state.loading && currentView === '/media'"
   />
 </template>
 
@@ -256,5 +282,13 @@ section.login {
 
 .login {
   float: right;
+}
+
+nav.sub {
+  grid-column: 1 / 3;
+}
+
+nav.sub > a {
+  font-size: 12pt;
 }
 </style>

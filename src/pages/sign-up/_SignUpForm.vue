@@ -1,11 +1,12 @@
 <script setup lang="ts">
   import { ref } from 'vue';
+  import SignUpSaveState from "./_SignUpSaveState.vue";
 
   const model = defineModel();
 
-  const props = defineProps({
-    saveState: String,
-  });
+  const props = defineProps<({
+    saveState: number,
+  })>();
 
   const slotLengths = ref([
     "2 hours",
@@ -16,7 +17,7 @@
 
 <template>
   <section class="c double">
-    <p class="save-state-message">{{saveState}}</p>
+    <SignUpSaveState :saveState="props.saveState" />
     <p>
       Fill out the form to sign up, the form is saved automatically.
     </p>

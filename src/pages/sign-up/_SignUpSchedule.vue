@@ -1,15 +1,16 @@
 <script setup lang="ts">
   import { computed, ref, onMounted } from 'vue';
   import { DateTime, Interval } from 'luxon';
+  import SignUpSaveState from "./_SignUpSaveState.vue";
 
   const emit = defineEmits(['scheduleSlot']);
 
-  const props = defineProps({
-    startDate: String,
-    endDate: String,
-    schedule: Object,
-    saveState: String,
-  });
+  const props = defineProps<({
+    startDate: string,
+    endDate: string,
+    schedule: object,
+    saveState: number,
+  })>();
 
   const slots = ref();
 
@@ -67,7 +68,7 @@
 
 <template>
   <section class="c double">
-    <p class="save-state-message">{{saveState}}</p>
+    <SignUpSaveState :saveState="props.saveState" />
     <h1>Availability <small>(All times {{localTimeZone}})</small></h1>
     <p>Please mark ALL times that you are available. If you mark all the times
       you are available, we'll have a better chance of fitting you in the schedule.</p>
@@ -115,7 +116,7 @@
   table {
     border-collapse: collapse;
   }
-  
+
   td {
     padding-left: 1rem;
     height: 3rem;

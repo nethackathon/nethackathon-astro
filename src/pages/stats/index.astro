@@ -1,0 +1,16 @@
+---
+
+import MainLayout from '../../layouts/MainLayout.astro';
+import AscensionsDeaths from '../../components/AscensionsDeaths.astro'
+import Livelog from '../../components/Livelog.astro'
+import { parseEvent } from '../../js/shared.js';
+
+const { currentEvent } = await fetch(`${import.meta.env.NODE_API}/event/current`)
+  .then((response) => response.json());
+const eventObject = parseEvent(currentEvent);
+
+---
+<MainLayout currentPage="stats">
+  <AscensionsDeaths currentEvent={eventObject} />
+  <Livelog currentEvent={eventObject} />
+</MainLayout>
