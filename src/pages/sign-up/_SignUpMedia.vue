@@ -19,6 +19,7 @@ const convertDate = (date) => {
 
 const defaultModel = {
   selectedEvent: null,
+  selectedStreamer: null,
   eventMediaId: '',
   mediaType: '',
   videoType: '',
@@ -38,15 +39,40 @@ const submitButtonText = computed(() => {
 
 const events = ref([]);
 const eventMedia = ref([]);
+const eventStreamers = ref([]);
 const filteredEventMedia = computed(() => {
   return eventMedia.value.filter((em) => em.event_id === model.selectedEvent.id);
 });
+const resetForm = () => {
+  model.eventMediaId = defaultModel.eventMediaId;
+  model.mediaType = defaultModel.media_type;
+  model.videoType = defaultModel.video_type;
+  model.platform = defaultModel.platform;
+  model.mediaUrl = defaultModel.media_url;
+  model.thumbnailUrl = defaultModel.thumbnail_url;
+  model.title = defaultModel.title;
+  model.description = defaultModel.description;
+  model.startTime = defaultModel.start_time;
+  model.endTime = defaultModel.end_time;
+}
+
+const getEventMedia = async () => {
+  const eventMediaUrl = `${nodeApi}/signup/event-media/get`;
+  const response = await fetch(eventMediaUrl, {
+    method: 'GET',
+    credentials: 'include'
+  });
+  if (!response.ok) {
+    throw new Error(`Failed to connect to ${eventMediaUrl}.`);
+  }
+  eventMedia.value = await response.json();
+}
 
 onMounted(async () => {
   try {
     state.loading = true;
     const eventsUrl = `${nodeApi}/events`;
-    let response = await fetch(eventsUrl, {
+    const response = await fetch(eventsUrl, {
       method: 'GET'
     });
     if (!response.ok) {
@@ -56,15 +82,7 @@ onMounted(async () => {
     events.value = data.events.sort((ea, eb) => eb.event_start.localeCompare(ea.event_start));
     model.selectedEvent = events.value[0];
 
-    const eventMediaUrl = `${nodeApi}/signup/event-media/get`;
-    response = await fetch(eventMediaUrl, {
-      method: 'GET',
-      credentials: 'include'
-    });
-    if (!response.ok) {
-      throw new Error(`Failed to connect to ${eventMediaUrl}.`);
-    }
-    eventMedia.value = await response.json();
+    await getEventMedia();
 
     watch(model, () => {
       state.formSaveState = SaveState.Unsaved;
@@ -84,17 +102,32 @@ onMounted(async () => {
         model.startTime = convertDate(em.start_time);
         model.endTime = convertDate(em.end_time);
       } else {
-        model.eventMediaId = defaultModel.eventMediaId;
-        model.mediaType = defaultModel.media_type;
-        model.videoType = defaultModel.video_type;
-        model.platform = defaultModel.platform;
-        model.mediaUrl = defaultModel.media_url;
-        model.thumbnailUrl = defaultModel.thumbnail_url;
-        model.title = defaultModel.title;
-        model.description = defaultModel.description;
-        model.startTime = defaultModel.start_time;
-        model.endTime = defaultModel.end_time;
+        resetForm();
       }
+    });
+
+    watch(() => model.selectedEvent, async (selectedEvent) => {
+      try {
+        if (!selectedEvent) {
+          return;
+        }
+        const url = `${nodeApi}/event/${selectedEvent.id}/schedule`;
+        const response = await fetch(url, {
+          method: 'GET'
+        });
+        const data = await response.json();
+        eventStreamers.value = data.schedule;
+        console.log(eventStreamers.value);
+      } catch (error) {
+        console.error(error);
+      }
+    }, { immediate: true });
+    watch(() => model.selectedStreamer, async (selectedStreamer) => {
+      if (!selectedStreamer) {
+        return;
+      }
+      model.startTime = convertDate(selectedStreamer.start_time);
+      model.endTime = convertDate(selectedStreamer.end_time);
     });
   } catch (err) {
     console.error(err)
@@ -105,8 +138,8 @@ onMounted(async () => {
 
 
   const submitForm = async () => {
+    const isEditing = model.eventMediaId && model.eventMediaId !== '';
     try {
-      const isEditing = model.eventMediaId && model.eventMediaId !== '';
       state.formSaveState = SaveState.Saving;
       const url = isEditing ? `${nodeApi}/signup/event-media/update` : `${nodeApi}/signup/event-media/create`;
       const data = {...model};
@@ -123,6 +156,10 @@ onMounted(async () => {
       state.formSaveState = SaveState.Error;
       console.error(error);
     } finally {
+      if (!isEditing) {
+        resetForm();
+        await getEventMedia();
+      }
       state.formSaveState = SaveState.Saved;
     }
   };
@@ -264,6 +301,16 @@ onMounted(async () => {
             cols="50"
             rows="3"
         ></textarea>
+      </p>
+      <p>
+        <label for="streamer">Select streamer to set start time and end time to their schedule slot:</label><br>
+        <select
+            id="streamer"
+            v-model="model.selectedStreamer"
+        >
+          <option disabled value="">Select streamer:</option>
+          <option v-for="streamer in eventStreamers" :value="streamer">{{streamer.username}}</option>
+        </select>
       </p>
 
       <p>
