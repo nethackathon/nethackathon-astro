@@ -145,7 +145,7 @@ const formDebounceSave = debounce(async () => {
   }
 }, 1000);
 
-const isDev = true;
+const isDev = false;
 const nodeApi = (isDev) ? 'http://localhost:3000' : 'https://api.nethackathon.org';
 const props = defineProps<({
   currentEvent: NHEvent,

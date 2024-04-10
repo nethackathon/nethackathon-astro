@@ -4,7 +4,7 @@ import SignUpSaveState from './_SignUpSaveState.vue';
 import {SaveState} from "./_SaveState";
 
 const isDev = false;
-const nodeApi = isDev ? 'http://localhost:3000' : 'https://api.nethackathon.com';
+const nodeApi = isDev ? 'http://localhost:3000' : 'https://api.nethackathon.org';
 
 const state = reactive({
   loading: true,
