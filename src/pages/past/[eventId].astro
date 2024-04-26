@@ -9,6 +9,7 @@ export async function getStaticPaths() {
   const eventsResponse = await fetch(`${import.meta.env.NODE_API}/events`)
     .then((res) => res.json());
   const events = eventsResponse.events;
+  // Exclude most recent event
   return events
     .filter((event) => {
       // Only return events that have ended
@@ -36,8 +37,8 @@ const { title } = Astro.props;
   <section class="a double">
     <h2>{title}</h2>
     <EventStreamers eventId={eventId} />
-    <EventMedia eventId={eventId} />
   </section>
+  <EventMedia eventId={eventId} />
 </MainLayout>
 
 <style>

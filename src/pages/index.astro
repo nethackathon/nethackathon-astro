@@ -5,7 +5,10 @@ import MainLayout from '../layouts/MainLayout.astro';
 import EventCountdown from '../components/EventCountdown.astro';
 import Schedule from '../components/Schedule.astro';
 import { parseEvent } from '../js/shared.js';
+import EventMedia from "../components/EventMedia.astro";
+import EventStreamers from "../components/EventStreamers.astro";
 
+console.log(`${import.meta.env.NODE_API}/event/current`);
 const response = await fetch(`${import.meta.env.NODE_API}/event/current`)
   .then((response) => response.json());
 const currentEvent = response.currentEvent;
@@ -19,9 +22,17 @@ const deduped = streamers.filter((u, i) => streamers.indexOf(u) === i);
 
 ---
 <MainLayout currentPage="home">
-  <EventCountdown currentEvent={eventObject} nStreamers={deduped.length} />
+  <section class="a double">
+    <h3>Fall 2024</h3>
+    <p>Thank you to everyone who participated in the Fall 2024 event, it was a great success!</p>
+  </section>
+  <section class="a double">
+    <EventStreamers eventId="6" />
+  </section>
+  <EventMedia eventId="6" />
+  <!--EventCountdown currentEvent={eventObject} nStreamers={deduped.length} />
   <CurrentStreamer currentEvent={eventObject} />
   <section class="double c">
     <Schedule />
-  </section>
+  </section-->
 </MainLayout>

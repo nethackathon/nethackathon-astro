@@ -5,22 +5,61 @@ const { eventId } = Astro.props;
 const response = await fetch(`${import.meta.env.NODE_API}/event/${eventId}/media`)
   .then((response) => response.json());
 const eventMedia = response.media;
+const highlights = eventMedia.filter((media) => media.media_type === 'video' && media.video_type === 'highlight');
+// highlights in the URL format https://clips.twitch.tv/FancyEvilPigDendiFace-222xb6HBEY9uWubp
+// need to be reformatted to https://clips.twitch.tv/embed?clip=FancyEvilPigDendiFace-222xb6HBEY9uWubp&parent=nethackathon.org
+const reformattedHighlights = highlights.map((highlight) => {
+  const url = new URL(highlight.media_url);
+  // if the URL isn't clips.twitch.tv, return the original URL
+  if (url.pathname === '/embed' || url.href.indexOf('clips.twitch.tv') === -1) return highlight;
+  url.searchParams.set('clip', url.pathname.split('/')[1]);
+  url.searchParams.set('parent', 'nethackathon.org');
+  url.pathname = '/embed';
+  return {...highlight, media_url: url.href};
+});
+const playlists = eventMedia.filter((media) => media.media_type === 'playlist');
+const areHighlights = highlights && highlights.length > 0;
+const arePlaylists = playlists && playlists.length > 0;
 
 ---
 
-{eventMedia && eventMedia.map((media) => (
-  <div>
-    <h3>{media.title}</h3>
-    {media.description && <p>{media.description}</p>}
+{ arePlaylists &&
+  <section class="a double">
+  {playlists.map((playlist) => (
+      <div>
+        <h3>{playlist.title}</h3>
+        {playlist.description && <p>{playlist.description}</p>}
+        <div>
+          <div style="position:relative; padding-top: 56.25%;">
+            <iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+                    src={playlist.media_url}
+                    title={playlist.title} frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen></iframe>
+          </div>
+        </div>
+      </div>
+    ))}
+  </section>
+}
+
+{areHighlights &&
+    <section class="b double">
+      <h3>Highlights</h3>
+    </section>
+}
+{reformattedHighlights.map((highlight) => (
+  <section class="b">
+    <h3>{highlight.title}</h3>
+    {highlight.description && <p>{highlight.description}</p>}
     <div>
       <div style="position:relative; padding-top: 56.25%;">
         <iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
-                src={media.media_url}
-                title={media.title} frameborder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                src={highlight.media_url}
+                title={highlight.title} frameborder="0"
+                allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowfullscreen></iframe>
       </div>
     </div>
-  </div>
+  </section>
 ))}
-
