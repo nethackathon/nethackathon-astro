@@ -252,7 +252,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <nav class="sub">
+  <nav class="sub" v-if="state.loggedIn">
     <a v-if="signup.isAdmin" href="#/admin">Admin</a>
     <a v-if="eventUpcoming" href="#/">Preferences</a>
     <a v-if="eventUpcoming" href="#/availability">Availability</a>

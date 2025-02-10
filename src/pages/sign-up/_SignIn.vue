@@ -7,10 +7,10 @@
     nodeApi: String,
     currentEvent: NHEvent,
   })>();
-  const signupStart = props.currentEvent.signupsStart;
-  const signupEnd = props.currentEvent.signupsEnd;
-  const eventStart = props.currentEvent.eventStart;
-  const eventEnd = props.currentEvent.eventEnd;
+  const signupStart = props.currentEvent.signup_start;
+  const signupEnd = props.currentEvent.signup_end;
+  const eventStart = props.currentEvent.event_start;
+  const eventEnd = props.currentEvent.event_end;
 
   const signupsClosed = computed(() => {
     const now = new Date().toISOString();
