@@ -1,0 +1,12 @@
+---
+import Schedule from "./Schedule.astro";
+import CurrentStreamer from "./CurrentStreamer.astro";
+
+const { currentEvent } = Astro.props;
+---
+
+<h1>Active</h1>
+<CurrentStreamer currentEvent={currentEvent} />
+<section class="double c">
+  <Schedule />
+</section>

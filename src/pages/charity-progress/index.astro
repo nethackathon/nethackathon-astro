@@ -1,0 +1,37 @@
+<span id="progress-bar"></span><span id=""></span>
+
+<style>
+  html, body {
+    background-color: black;
+    font-family: "DejaVu Sans Mono", "Menlo", sans-serif;
+    font-size: 10pt;
+    color: white;
+  }
+</style>
+
+<script>
+  import {random} from "lodash-es";
+
+  async function loadCharityInfo() {
+    const response = await fetch(
+      "https://partners.every.org/v0.2/nonprofit/givedirectly/fundraiser/nethackathon-vi-fundraising/raised?apiKey=pk_live_4e50fe0e20be54691b0e1459206c316a"
+    );
+    const charityInfo = await response.json();
+    console.log('charityInfo', charityInfo);
+    return charityInfo;
+  }
+
+  window.addEventListener('load', async () => {
+    let progress = '*'
+    const randomProgress = Math.floor(Math.random() * 79);
+    for (let i = 0; i < randomProgress; i++) {
+      progress += '*'
+    }
+    const progressBar = document.getElementById('progress-bar');
+    progressBar.innerHTML = progress;
+    let charityInfo = await loadCharityInfo();
+    setInterval(async () => {
+      charityInfo = await loadCharityInfo();
+    }, 5000);
+  });
+</script>

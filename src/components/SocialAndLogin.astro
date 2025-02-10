@@ -1,0 +1,100 @@
+---
+import DiscordIcon from "../icons/discord.astro";
+import MastodonIcon from "../icons/mastodon.astro";
+
+const loginUrl = `${import.meta.env.NODE_API}/twitch/auth`;
+const logoutUrl = `${import.meta.env.NODE_API}/twitch/logout`;
+---
+
+<div class="social-login-container">
+  <div class="social-links">
+    <a
+      href="https://discord.gg/PERAP8caeS"
+      class="social-link"
+      aria-label="Join our Discord server"
+    >
+      <DiscordIcon />
+    </a>
+    <a
+      href="https://mastodon.social/@nethackathon"
+      class="social-link"
+      aria-label="Follow us on Mastodon"
+    >
+      <MastodonIcon />
+    </a>
+  </div>
+  <div id="login-container" data-logout-url={logoutUrl}>
+    <span id="login-status" class="text-xs">
+      <a href={loginUrl} class="login-link">Streamer Login</a>
+    </span>
+  </div>
+</div>
+
+<script>
+  const loginStatus = document.getElementById("login-status");
+  const container = document.getElementById("login-container");
+  const logoutUrl = container?.dataset.logoutUrl;
+
+  function updateLoginStatus(username: string) {
+    if (!loginStatus) return;
+    loginStatus.innerHTML = `<span>Signed in as ${username} (<a href="/sign-up">Settings</a> | <a href=${logoutUrl} onclick="localStorage.removeItem('streamer')">Log out</a>)</span>`;
+  }
+
+  // Check localStorage on load
+  const savedUser = localStorage.getItem("streamer");
+  if (savedUser) {
+    updateLoginStatus(savedUser);
+  }
+
+  window.addEventListener("userLogin", (event) => {
+    const { username, loggedIn } = (
+      event as CustomEvent<{ username: string; loggedIn: boolean }>
+    ).detail;
+    if (loggedIn) {
+      localStorage.setItem("streamer", username);
+      updateLoginStatus(username);
+    } else {
+      localStorage.removeItem("streamer");
+    }
+  });
+</script>
+
+<style>
+  .social-login-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 0.1rem 0.1rem 0.1rem 0.1rem;
+    max-width: var(--content-width, 1200px);
+    margin: 0 auto;
+  }
+
+  .social-links {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .social-link {
+    color: var(--color-b);
+    transition: color 0.2s ease;
+  }
+
+  .social-link:hover {
+    color: var(--color-a);
+  }
+
+  .text-xs {
+    font-size: 0.8rem;
+  }
+
+  .login-link {
+    color: var(--color-b);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .login-link:hover {
+    color: var(--color-a);
+  }
+</style>

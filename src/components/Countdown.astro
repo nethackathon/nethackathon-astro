@@ -2,7 +2,7 @@
 const { start, end } = Astro.props;
 ---
 
-<section class="double a counter" data-start={start} data-end={end} >
+<section class="double a counter hidden" data-start={start} data-end={end} >
   <div>
     <slot name="before-countdown"></slot>
     <h2>

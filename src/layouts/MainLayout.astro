@@ -1,46 +1,57 @@
 ---
+import Charity from "../components/Charity.astro";
+import Logo from "../components/Logo.astro";
+import MagicLamp from "../components/MagicLamp.astro";
+import NavComponent from "../components/Nav.astro";
+import SocialAndLogin from "../components/SocialAndLogin.astro";
+import favicon from "../images/favicon.png";
 
-import Charity from '../components/Charity.astro';
-import Logo from '../components/Logo.astro';
-import MagicLamp from '../components/MagicLamp.astro';
-import NavComponent from '../components/Nav.astro';
-import favicon from '../images/favicon.png';
 const { currentPage } = Astro.props;
 let response = await fetch(`${import.meta.env.NODE_API}/event/current`);
 const { currentEvent } = await response.json();
 response = await fetch(`${import.meta.env.NODE_API}/event/last`);
 const { lastEvent } = await response.json();
-
 ---
-  <!DOCTYPE html>
-  <html lang="en">
-    <head>
-      <meta charset="utf-8">
-      <meta http-equiv="X-UA-Compatible" content="IE=edge">
-      <meta name="viewport" content="width=device-width,initial-scale=1.0">
-      <link rel="icon" href={favicon}>
-      <title>NetHackathon</title>
-      <meta name="description" content="NetHackathon is an event where, twice a year, Twitch content creators stream NetHack continuously for 48 hours.">
-      <meta property="og:type" content="website">
-      <meta property="og:url" content="https://nethackathon.org/">
-      <meta property="og:title" content="NetHackathon">
-      <meta property="og:description" content="Twice a year, Twitch content creators stream NetHack continuously for over 48 hours!">
-      <meta property="og:image" content="https://nethackathon.org/favicon.png">
-    </head>
-    <body>
-      <header>
-        { currentEvent.charity_name && <Charity currentEvent={currentEvent} /> }
-        <Logo />
-        <NavComponent currentEvent={currentEvent} lastEvent={lastEvent} currentPage={currentPage} />
-        <slot name="nav" />
-      </header>
-      <main>
-        <slot />
-        <MagicLamp />
-      </main>
-    </body>
-  </html>
 
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <link rel="icon" href={favicon.src} />
+    <title>NetHackathon</title>
+    <meta
+      name="description"
+      content="NetHackathon is an event where, twice a year, Twitch content creators stream NetHack continuously for 48 hours."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://nethackathon.org/" />
+    <meta property="og:title" content="NetHackathon" />
+    <meta
+      property="og:description"
+      content="Twice a year, Twitch content creators stream NetHack continuously for over 48 hours!"
+    />
+    <meta property="og:image" content="https://nethackathon.org/favicon.png" />
+  </head>
+  <body>
+    <header>
+      <MagicLamp />
+      {currentEvent.charity_name && <Charity currentEvent={currentEvent} />}
+      <Logo />
+      <SocialAndLogin />
+      <NavComponent
+        currentEvent={currentEvent}
+        lastEvent={lastEvent}
+        currentPage={currentPage}
+      />
+      <slot name="nav" />
+    </header>
+    <main>
+      <slot />
+    </main>
+  </body>
+</html>
 
 <style is:global>
   :root {
@@ -68,7 +79,7 @@ const { lastEvent } = await response.json();
     gap: 0.5em;
   }
   main {
-    margin: 1em 0;
+    margin: 0 0 2em 0;
     display: grid;
     gap: 0.5em;
   }
@@ -77,24 +88,35 @@ const { lastEvent } = await response.json();
     border: 1px solid;
     border-radius: 3px;
   }
-  section a, section h2, section h3 {
+  section a,
+  section h2,
+  section h3 {
     color: var(--color-b);
   }
-  strong.a, section.a a, section.a h2, section.a h3 {
+  strong.a,
+  section.a a,
+  section.a h2,
+  section.a h3 {
     color: var(--color-a);
   }
-  strong.b, section.b a, section.b h2, section.b h3 {
+  strong.b,
+  section.b a,
+  section.b h2,
+  section.b h3 {
     color: var(--color-b);
   }
-  strong.c, section.c a, section.c h2, section.c h3 {
+  strong.c,
+  section.c a,
+  section.c h2,
+  section.c h3 {
     color: var(--color-c);
   }
-  @media (min-width: 1264px) {
+  @media (min-width: 1401px) {
     body {
       padding: 2em 20%;
     }
   }
-  @media (max-width: 1263px) {
+  @media (max-width: 1400px) {
     body {
       padding: 0.5em 1em 1em 1em;
     }
@@ -115,18 +137,19 @@ const { lastEvent } = await response.json();
       grid-template-columns: 1fr;
     }
   }
-  :root, html[data-theme='dark'] {
+  :root,
+  html[data-theme="dark"] {
     color: var(--color-light);
     background: var(--color-dark);
   }
-  section[data-theme='dark'] {
+  section[data-theme="dark"] {
     border-color: var(--color-light);
   }
-  html[data-theme='light'] {
+  html[data-theme="light"] {
     color: var(--color-dark);
     background: var(--color-light);
   }
-  section[data-theme='light'] {
+  section[data-theme="light"] {
     border-color: var(--color-dark);
   }
   .hidden {

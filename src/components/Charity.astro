@@ -1,23 +1,53 @@
 ---
 const { currentEvent } = Astro.props;
+let name = currentEvent.charity_name;
+name = name.length % 2 === 0 ? name : name + " ";
+const line = "_".repeat(name.length);
+const spce = " ".repeat(name.length);
+const botm = "\\/".repeat(Math.floor(name.length / 2));
 ---
 
 <p class="charity">
   <a class="charity-link" href={currentEvent.giving_url} target="_blank">
-    <small>
-      We're supporting {currentEvent.charity_name}, donate now!
-    </small>
+    <pre
+      class="charity-text">
+_______________________{line}_____
+|  |                   {spce} |  |
+|  | We're Supporting: {name} |  |
+@  |                   {spce} |  @
+   \/\/\/\/\/\/\/\/\/\/{botm}\/</pre>
   </a>
 </p>
 
 <style>
   .charity {
-    text-align: center;
-    margin: 0 0 1em 0;
+    margin: 0;
+    padding: 0;
   }
+
   .charity-link {
-    font-size: 1.2em;
-    font-weight: bold;
     color: var(--color-c);
+    text-decoration: none;
+  }
+
+  .charity-text {
+    font-size: 0.9rem;
+    margin: 0 auto;
+    display: inline-block;
+    font-family: monospace;
+    white-space: pre;
+  }
+
+  .donate-now {
+    background-color: var(--color-c);
+    color: black;
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+    margin-left: 0.5rem;
+    transition: opacity 0.2s ease;
+  }
+
+  .charity-link:hover .donate-now {
+    opacity: 0.8;
   }
 </style>

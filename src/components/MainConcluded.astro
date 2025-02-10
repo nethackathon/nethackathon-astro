@@ -1,0 +1,19 @@
+---
+import EventMedia from "../components/EventMedia.astro";
+import EventStreamers from "../components/EventStreamers.astro";
+
+const { currentEvent } = Astro.props;
+---
+
+<h1>Concluded</h1>
+<section class="a double">
+  <h3>{currentEvent.title}</h3>
+  <p>
+    Thank you to everyone who participated in the {currentEvent.title} event, it
+    was a great success!
+  </p>
+</section>
+<section class="a double">
+  <EventStreamers eventId={currentEvent.id} />
+</section>
+<EventMedia eventId={currentEvent.id} />

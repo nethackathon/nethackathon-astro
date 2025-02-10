@@ -1,21 +1,23 @@
 ---
-
-import Countdown from './Countdown.astro';
+import Countdown from "./Countdown.astro";
+import { eventDateString } from "../js/shared.js";
 const { currentEvent } = Astro.props;
-
+const eventDates = eventDateString(
+  currentEvent.event_start,
+  currentEvent.event_end,
+);
 ---
 
-<section class="double c">
-  <p>We're currently looking for streamers for the next event to be held the weekend of
-    <strong class="c">{currentEvent.eventDates}</strong>.</p>
-  <p>
-  <h2>
-    Signups end in <Countdown startDate={currentEvent.signupsEnd} spanId="signup-countdown" />
-  </h2>
-  <p>
+<Countdown start={currentEvent.signup_start} end={currentEvent.signup_end}>
+  <div slot="before-countdown">
+    <p>
+      We're currently looking for streamers for the next event to be held the
+      weekend of
+      <strong class="c">{eventDates}</strong>.
+    </p>
+    <p>Sign-ups end in:</p>
+  </div>
+  <p slot="after-countdown">
     <a href="/sign-up">Sign up today!</a>
   </p>
-</section>
-
-<script>
-</script>
+</Countdown>

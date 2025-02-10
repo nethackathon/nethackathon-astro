@@ -4,12 +4,12 @@ import { DateTime } from 'luxon';
 export function eventDateString(start, end) {
   const eventStart = new Date(start);
   const eventEnd = new Date(end);
-  const fullMonth = { month: 'long' };
-  const startMonth = eventStart.toLocaleString(undefined, fullMonth);
-  const endMonth = eventEnd.toLocaleString(undefined, fullMonth);
+  const options = { month: 'long', timeZone: 'UTC' };
+  const startMonth = eventStart.toLocaleString('en-US', options);
+  const endMonth = eventEnd.toLocaleString('en-US', options);
   return (startMonth === endMonth) ?
-    `${startMonth} ${eventStart.getDate()} - ${eventEnd.getDate()}` :
-    `${startMonth} ${eventStart.getDate()} - ${endMonth} ${eventEnd.getDate()}`;
+    `${startMonth} ${eventStart.getUTCDate()} - ${eventEnd.getUTCDate()}` :
+    `${startMonth} ${eventStart.getUTCDate()} - ${endMonth} ${eventEnd.getUTCDate()}`;
 }
 
 
@@ -25,6 +25,7 @@ function getNumberSuffix(num) {
     default: return 'th';
   }
 }
+
 
 export function parseEvent(event) {
   const now = new Date().toISOString();

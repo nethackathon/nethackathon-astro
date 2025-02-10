@@ -1,6 +1,7 @@
 <script setup lang="ts">
   import { ref } from 'vue';
   import SignUpSaveState from "./_SignUpSaveState.vue";
+  import SignUpCheckItem from './_SignUpCheckItem.vue';
 
   const model = defineModel();
 
@@ -18,15 +19,29 @@
 <template>
   <section class="c double">
     <SignUpSaveState :saveState="props.saveState" />
+    <h3>Sign Up</h3>
     <p>
-      Fill out the form to sign up, the form is saved automatically.
+      There are three steps to sign up for the event:
     </p>
-    <p>
-      We organize the event using Discord. Join the NetHackathon Discord server
-      at: <a href="https://discord.gg/PERAP8caeS">https://discord.gg/PERAP8caeS</a>
-      and introduce yourself!
-    </p>
+    <ol>
+      <li>Fill out the short form below, the form is saved automatically.</li>
+      <li>Click the <a href="#/availability">Availability</a> link above and select all time slots during the weekend where you are available to
+        stream.</li>
+      <li>
+        Join the NetHackathon Discord server at:
+        <a href="https://discord.gg/PERAP8caeS">https://discord.gg/PERAP8caeS</a> and introduce yourself!
+      </li>
+    </ol>
     <form ref="form">
+      <p>
+      <SignUpCheckItem instructions-height="4em" v-model="model.signedUp">
+        <template #description>
+          YES! I want to participate in this event.
+            <small>You will not be assigned a slot in the event if this checkbox is not checked.
+            You can change this preference at any point until the event is scheduled.</small>
+        </template>
+      </SignUpCheckItem>
+      </p>
       <p>
         <label for="slotLength">Maximum slot length (most streamers will be assigned a 2 hours slot):</label><br>
         <select

@@ -1,19 +1,26 @@
 ---
-
 const { currentEvent, lastEvent, currentPage } = Astro.props;
 const now = new Date();
-const signUpsOpen = (
-  (now > new Date(currentEvent.signup_start)) &&
-  (now < new Date(currentEvent.signup_end))
-);
-
+const signUpsOpen =
+  now > new Date(currentEvent.signup_start) &&
+  now < new Date(currentEvent.signup_end);
 ---
-<nav>
-  <a class={(currentPage === 'home') ? 'active' : ''} href="/">Home</a>
-  <a class={(currentPage === 'stats') ? 'active' : ''} href="/stats">Stats</a>
-  <a class={(currentPage === 'about') ? 'active' : ''} href="/about">About</a>
-  <a class={(currentPage === 'past') ? 'active' : ''} href={"/past/" + lastEvent.id}>Past events</a>
-  { currentEvent.charity_name && <a class={(currentPage === 'charity') ? 'active' : ''} href="/charity">Charity</a> }
-  { signUpsOpen && <a href="/sign-up">Sign up</a> }
+
+<nav id="top-nav">
+  <a class={currentPage === "home" ? "active" : ""} href="/">Home</a>
+  <!--a class={(currentPage === 'stats') ? 'active' : ''} href="/stats">Stats</a-->
+  <a class={currentPage === "about" ? "active" : ""} href="/about">About</a>
+  <a
+    class={currentPage === "past" ? "active" : ""}
+    href={"/past/" + lastEvent.id}>Events</a
+  >
+  {
+    currentEvent.charity_name && (
+      <a class={currentPage === "charity" ? "active" : ""} href="/charity">
+        Charity
+      </a>
+    )
+  }
+  {signUpsOpen && <a href="/sign-up">Sign Up</a>}
   <a href="/annotate">#annotate</a>
 </nav>

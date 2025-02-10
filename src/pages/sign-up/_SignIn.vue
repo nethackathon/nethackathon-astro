@@ -58,5 +58,6 @@
     font-family: Inter, Roobert, "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-weight: 600;
     font-stretch: 100%;
+    cursor: pointer;
   }
 </style>

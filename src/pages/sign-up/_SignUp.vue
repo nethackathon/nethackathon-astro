@@ -1,16 +1,26 @@
 <script setup lang="ts">
+import Admin from './_Admin.vue';
 import SignIn from './_SignIn.vue';
 import SignUpChecklist from './_SignUpChecklist.vue';
 import SignUpForm from './_SignUpForm.vue';
 import SignUpMedia from './_SignUpMedia.vue';
 import SignUpSchedule from './_SignUpSchedule.vue';
 import SignUpSurvey from './_SignUpSurvey.vue';
-import type {Interval} from 'luxon';
-import type {NHEvent} from '../../types/NHEvent';
-import type {Ref} from 'vue';
-import {SaveState} from './_SaveState';
-import {computed, onMounted, reactive, ref, watch} from 'vue';
-import {debounce} from 'lodash-es';
+import StreamerFaq from './_StreamerFaq.vue';
+import type { Interval } from 'luxon';
+import type { NHEvent } from '../../types/NHEvent';
+import type { Ref } from 'vue';
+import { SaveState } from './_SaveState';
+import { computed, onMounted, reactive, ref, watch } from 'vue';
+import { debounce } from 'lodash-es';
+
+const props = defineProps<({
+  nodeApi: string,
+  currentEvent: NHEvent,
+  eventActive: boolean,
+  eventUpcoming: boolean,
+  eventConcluded: boolean
+})>();
 
 const state = reactive({
   loggedIn: false,
@@ -22,6 +32,7 @@ const state = reactive({
 });
 
 const signup = reactive({
+  signedUp: false,
   pronouns: '',
   discordUsername: '',
   notes: '',
@@ -30,6 +41,7 @@ const signup = reactive({
   startTime: '',
   endTime: '',
   nextStreamer: '',
+  isAdmin: false,
 });
 
 const checklist = ref({
@@ -65,14 +77,17 @@ const schedule: Ref<Schedule> = ref({});
 const scheduleDebounceSave = debounce(async () => {
   state.scheduleSaveState = SaveState.Saving;
   try {
-    const url = `${nodeApi}/signup/schedule`;
+    const url = `${props.nodeApi}/signup/schedule`;
     await fetch(url, {
       method: 'PUT',
       credentials: 'include',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(schedule.value),
+      body: JSON.stringify({
+        eventId: props.currentEvent.id,
+        schedule: schedule.value,
+      }),
     });
   } catch (error) {
     console.error(error);
@@ -84,7 +99,7 @@ const scheduleDebounceSave = debounce(async () => {
 const surveyDebounceSave = debounce(async () => {
   state.surveySaveState = SaveState.Saving;
   try {
-    const url = `${nodeApi}/signup/survey`;
+    const url = `${props.nodeApi}/signup/survey`;
     await fetch(url, {
       method: 'PUT',
       credentials: 'include',
@@ -103,14 +118,17 @@ const surveyDebounceSave = debounce(async () => {
 const checklistDebounceSave = debounce(async () => {
   state.checklistSaveState = SaveState.Saving;
   try {
-    const url = `${nodeApi}/signup/checklist`;
+    const url = `${props.nodeApi}/signup/checklist`;
     await fetch(url, {
       method: 'PUT',
       credentials: 'include',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(checklist.value),
+      body: JSON.stringify({
+        eventId: props.currentEvent.id,
+        checklist: checklist.value,
+      }),
     });
   } catch (error) {
     console.error(error);
@@ -122,8 +140,10 @@ const checklistDebounceSave = debounce(async () => {
 const formDebounceSave = debounce(async () => {
   state.formSaveState = SaveState.Saving;
   try {
-    const url = `${nodeApi}/signup/text`;
+    const url = `${props.nodeApi}/signup/text`;
     const data = {
+      eventId: props.currentEvent.id,
+      signedUp: signup.signedUp,
       discordUsername: signup.discordUsername,
       notes: signup.notes,
       pronouns: signup.pronouns,
@@ -144,12 +164,6 @@ const formDebounceSave = debounce(async () => {
     state.formSaveState = SaveState.Saved;
   }
 }, 1000);
-
-const isDev = false;
-const nodeApi = (isDev) ? 'http://localhost:3000' : 'https://api.nethackathon.org';
-const props = defineProps<({
-  currentEvent: NHEvent,
-})>();
 
 const scheduleSlot = (slot: Interval) => {
   if (!slot.start) return;
@@ -175,7 +189,7 @@ onMounted(async () => {
     window.addEventListener('hashchange', () => {
       currentPath.value = window.location.hash;
     });
-    const url = `${nodeApi}/signup`;
+    const url = `${props.nodeApi}/signup`;
     state.loading = true;
     const response = await fetch(url, {
       method: 'GET',
@@ -188,7 +202,9 @@ onMounted(async () => {
     schedule.value = JSON.parse(data.schedule);
     checklist.value = JSON.parse(data.checklist);
     survey.value = JSON.parse(data.survey);
+    signup.signedUp = data.signedUp;
     signup.pronouns = data.pronouns;
+    signup.isAdmin = data.isAdmin;
     signup.discordUsername = data.discordUsername;
     signup.notes = data.notes;
     signup.slotLength = data.slotLength;
@@ -197,9 +213,21 @@ onMounted(async () => {
     signup.endTime = data.endTime;
     signup.nextStreamer = data.nextStreamer;
     state.loggedIn = true;
+    window.dispatchEvent(new CustomEvent('userLogin', { 
+      detail: { 
+        username: data.username,
+        loggedIn: true 
+      }
+    }));
   } catch (err) {
     console.error(err)
     state.loggedIn = false;
+    window.dispatchEvent(new CustomEvent('userLogin', { 
+      detail: { 
+        username: '',
+        loggedIn: false 
+      }
+    }));
   } finally {
     state.loading = false;
     watch(signup, () => {
@@ -225,26 +253,26 @@ onMounted(async () => {
 
 <template>
   <nav class="sub">
-    <a href="#/">Sign Up</a>
-    <a href="#/schedule">Schedule</a>
-    <a href="#/checklist">Checklist</a>
-    <a href="#/media">Media</a>
-    <a href="#/survey">Survey</a>
+    <a v-if="signup.isAdmin" href="#/admin">Admin</a>
+    <a v-if="eventUpcoming" href="#/">Preferences</a>
+    <a v-if="eventUpcoming" href="#/availability">Availability</a>
+    <a v-if="eventUpcoming" href="#/checklist">Checklist</a>
+    <a v-if="eventActive || eventConcluded" href="#/media">Media</a>
+    <a v-if="eventActive || eventConcluded" href="#/survey">Survey</a>
+    <a href="#/faq">FAQ</a>
   </nav>
-  <section class="a double login" v-if="state.loggedIn">
-    <span class="login">
-      <small>
-        Signed in as {{ signup.username }} <a :href="`${nodeApi}/twitch/logout`">Log out</a>
-      </small>
-    </span>
-  </section>
   <SignIn
       v-if="!state.loggedIn"
-      :nodeApi="nodeApi"
+      :nodeApi="props.nodeApi"
       :currentEvent="props.currentEvent"
+  />
+  <Admin
+    v-if="signup.isAdmin && currentView === '/admin'"
+    :nodeApi="props.nodeApi"
   />
   <SignUpChecklist
       v-if="state.loggedIn && !state.loading && currentView === '/checklist'"
+      :eventTitle="props.currentEvent.title"
       :nextStreamer="signup.nextStreamer"
       :username="signup.username"
       :startTime="signup.startTime"
@@ -257,21 +285,26 @@ onMounted(async () => {
       v-model="signup"
       :saveState="state.formSaveState"
   />
+  <SignUpSchedule
+      v-if="state.loggedIn && !state.loading && currentView === '/availability'"
+      :eventId="props.currentEvent.id"
+      :startDate="props.currentEvent.event_start"
+      :endDate="props.currentEvent.event_end"
+      :schedule="schedule"
+      :saveState="state.scheduleSaveState"
+      @scheduleSlot="scheduleSlot"
+  />
   <SignUpSurvey
       v-if="state.loggedIn && !state.loading && currentView === '/survey'"
       v-model="survey"
       :saveState="state.surveySaveState"
   />
-  <SignUpSchedule
-      v-if="state.loggedIn && !state.loading && currentView === '/schedule'"
-      :startDate="props.currentEvent.eventStart"
-      :endDate="props.currentEvent.eventEnd"
-      :schedule="schedule"
-      :saveState="state.scheduleSaveState"
-      @scheduleSlot="scheduleSlot"
-  />
   <SignUpMedia
       v-if="state.loggedIn && !state.loading && currentView === '/media'"
+      :nodeApi="props.nodeApi"
+  />
+  <StreamerFaq
+      v-if="state.loggedIn && !state.loading && currentView === '/faq'"
   />
 </template>
 
@@ -291,4 +324,4 @@ nav.sub {
 nav.sub > a {
   font-size: 12pt;
 }
-</style>
+</style>./_Admin.vue

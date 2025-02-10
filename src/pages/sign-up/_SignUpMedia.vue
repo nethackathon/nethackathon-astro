@@ -3,8 +3,9 @@ import { computed, onMounted, reactive, ref, watch } from 'vue';
 import SignUpSaveState from './_SignUpSaveState.vue';
 import {SaveState} from "./_SaveState";
 
-const isDev = false;
-const nodeApi = isDev ? 'http://localhost:3000' : 'https://api.nethackathon.org';
+const props = defineProps<({
+  nodeApi: string,
+})>();
 
 const state = reactive({
   loading: true,
@@ -57,7 +58,7 @@ const resetForm = () => {
 }
 
 const getEventMedia = async () => {
-  const eventMediaUrl = `${nodeApi}/signup/event-media/get`;
+  const eventMediaUrl = `${props.nodeApi}/signup/event-media/get`;
   const response = await fetch(eventMediaUrl, {
     method: 'GET',
     credentials: 'include'
@@ -71,7 +72,7 @@ const getEventMedia = async () => {
 onMounted(async () => {
   try {
     state.loading = true;
-    const eventsUrl = `${nodeApi}/events`;
+    const eventsUrl = `${props.nodeApi}/events`;
     const response = await fetch(eventsUrl, {
       method: 'GET'
     });
@@ -111,7 +112,7 @@ onMounted(async () => {
         if (!selectedEvent) {
           return;
         }
-        const url = `${nodeApi}/event/${selectedEvent.id}/schedule`;
+        const url = `${props.nodeApi}/event/${selectedEvent.id}/schedule`;
         const response = await fetch(url, {
           method: 'GET'
         });
@@ -141,7 +142,7 @@ onMounted(async () => {
     const isEditing = model.eventMediaId && model.eventMediaId !== '';
     try {
       state.formSaveState = SaveState.Saving;
-      const url = isEditing ? `${nodeApi}/signup/event-media/update` : `${nodeApi}/signup/event-media/create`;
+      const url = isEditing ? `${props.nodeApi}/signup/event-media/update` : `${props.nodeApi}/signup/event-media/create`;
       const data = {...model};
       data.eventId = model.selectedEvent?.id ?? '';
       await fetch(url, {

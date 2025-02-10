@@ -1,16 +1,29 @@
 ---
-import MainLayout from '../../layouts/MainLayout.astro';
-import SignUp from './_SignUp.vue';
-import { parseEvent } from '../../js/shared.js';
+import MainLayout from "../../layouts/MainLayout.astro";
+import SignUp from "./_SignUp.vue";
+import {
+  isEventActive,
+  isEventUpcoming,
+  hasEventConcluded,
+} from "../../js/event.js";
 
-const { currentEvent } = await fetch(`${import.meta.env.NODE_API}/event/current`)
-  .then((response) => response.json());
-const eventObject = parseEvent(currentEvent);
+const nodeApi = import.meta.env.NODE_API;
+const { currentEvent } = await fetch(
+  `${import.meta.env.NODE_API}/event/current`,
+).then((response) => response.json());
 
+const eventActive = isEventActive(currentEvent);
+const eventUpcoming = isEventUpcoming(currentEvent);
+const eventConcluded = hasEventConcluded(currentEvent);
 ---
+
 <MainLayout>
   <SignUp
     client:load
-    currentEvent={eventObject}
+    nodeApi={nodeApi}
+    currentEvent={currentEvent}
+    eventActive={eventActive}
+    eventUpcoming={eventUpcoming}
+    eventConcluded={eventConcluded}
   />
 </MainLayout>

@@ -2,7 +2,11 @@
 const { currentEvent } = Astro.props;
 ---
 
-<section class="double a" id="current-streamer" data-start={currentEvent.eventStart} >
+<section
+  class="double a"
+  id="current-streamer"
+  data-start={currentEvent.eventStart}
+>
   <h2>Currently streaming: <a href="#" id="currently-streaming"></a></h2>
   <h3 id="up-next-h3">Up next: <a href="#" id="up-next"></a></h3>
 </section>
@@ -10,30 +14,33 @@ const { currentEvent } = Astro.props;
   <div class="twitch">
     <div class="twitch-video">
       <iframe
-          id="twitch-video-iframe"
-          src="https://twitch.tv"
-          frameborder="0"
-          scrolling="no"
-          allowfullscreen="true"
-          height="100%"
-          width="100%">
+        id="twitch-video-iframe"
+        src="https://twitch.tv"
+        frameborder="0"
+        scrolling="no"
+        allowfullscreen="true"
+        height="100%"
+        width="100%"
+      >
       </iframe>
     </div>
     <div class="twitch-chat">
       <iframe
-          id="twitch-chat-iframe"
-          frameborder="0"
-          scrolling="no"
-          src="https://twitch.tv"
-          height="100%"
-          width="100%">
+        id="twitch-chat-iframe"
+        frameborder="0"
+        scrolling="no"
+        src="https://twitch.tv"
+        height="100%"
+        width="100%"
+      >
       </iframe>
     </div>
   </div>
 </section>
 
 <style>
-  #current-streamer, #twitch-embed {
+  #current-streamer,
+  #twitch-embed {
     display: none;
   }
 
@@ -80,11 +87,11 @@ const { currentEvent } = Astro.props;
   }
 </style>
 
-<script>
+<script client:load>
   import { DateTime } from "luxon";
   import type { Streamer } from "../interfaces/streamer";
 
-  function getCurrentStreamer(schedule: Streamer[], curStreamer) : string {
+  function getCurrentStreamer(schedule: Streamer[], curStreamer): string {
     const now = DateTime.now();
     let current = 0;
     let next = 1;
@@ -100,53 +107,58 @@ const { currentEvent } = Astro.props;
     // If we've already run this and there is no new streamer, there is nothing to be done
     if (curStreamer === currentStreamer) return currentStreamer;
 
-    const currentStreamerSection = document.getElementById('current-streamer');
-    const twitchEmbedStreamerSection = document.getElementById('twitch-embed');
-    const twitchVideo = document.getElementById('twitch-video-iframe');
-    const twitchChat = document.getElementById('twitch-chat-iframe');
-    let streamerLink = document.getElementById('currently-streaming');
+    const currentStreamerSection = document.getElementById("current-streamer");
+    const twitchEmbedStreamerSection = document.getElementById("twitch-embed");
+    const twitchVideo = document.getElementById("twitch-video-iframe");
+    const twitchChat = document.getElementById("twitch-chat-iframe");
+    let streamerLink = document.getElementById("currently-streaming");
 
+    if (!currentStreamerSection || !twitchEmbedStreamerSection) return "";
     const eventStart = currentStreamerSection.dataset.start;
+    if (!eventStart) return "";
     const eventStarted = DateTime.now() >= DateTime.fromISO(eventStart);
     if (eventStarted) {
-      currentStreamerSection.style.display = 'block';
-      twitchEmbedStreamerSection.style.display = 'block';
+      currentStreamerSection.style.display = "block";
+      twitchEmbedStreamerSection.style.display = "block";
     } else {
-      return '';
+      return "";
     }
 
     if (streamerLink) {
-      streamerLink.setAttribute('href', `https://twitch.tv/${currentStreamer}`);
+      streamerLink.setAttribute("href", `https://twitch.tv/${currentStreamer}`);
       streamerLink.innerText = currentStreamer;
     }
 
     if (twitchVideo !== null)
-      twitchVideo.src = `https://player.twitch.tv/?channel=${currentStreamer}&parent=nethackathon.org&autoplay=true`
+      twitchVideo.src = `https://player.twitch.tv/?channel=${currentStreamer}&parent=nethackathon.org&autoplay=true`;
 
     if (twitchChat !== null)
-      twitchChat.src = `https://www.twitch.tv/embed/${currentStreamer}/chat?parent=nethackathon.org`
+      twitchChat.src = `https://www.twitch.tv/embed/${currentStreamer}/chat?parent=nethackathon.org`;
 
     if (next < schedule.length) {
       const nextStreamer = schedule[next].username;
-      let nextLink = document.getElementById('up-next');
+      let nextLink = document.getElementById("up-next");
       if (!nextLink) return currentStreamer;
-      nextLink.setAttribute('href', `https://twitch.tv/${nextStreamer}`);
+      nextLink.setAttribute("href", `https://twitch.tv/${nextStreamer}`);
       nextLink.innerText = nextStreamer;
     } else {
-      const upNextH3 = document.getElementById('up-next-h3');
+      const upNextH3 = document.getElementById("up-next-h3");
       if (upNextH3) {
-        upNextH3.style.display = 'none';
+        upNextH3.style.display = "none";
       }
     }
 
     return currentStreamer;
   }
-  window.addEventListener('load', async () => {
-    const response = await fetch('https://api.nethackathon.org/event/current/schedule');
+  window.addEventListener("load", async () => {
+    const response = await fetch(
+      "https://api.nethackathon.org/event/current/schedule",
+    );
     const data = await response.json();
     const schedule = data.sort((a: Streamer, b: Streamer) => {
-      return a.start_time.localeCompare(b.start_time); });
-    let currentStreamer = '';
+      return a.start_time.localeCompare(b.start_time);
+    });
+    let currentStreamer = "";
     currentStreamer = getCurrentStreamer(schedule, currentStreamer);
 
     window.setInterval(() => {

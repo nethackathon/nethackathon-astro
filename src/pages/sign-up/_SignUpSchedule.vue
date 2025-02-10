@@ -73,7 +73,9 @@
     <p>Please mark ALL times that you are available. If you mark all the times
       you are available, we'll have a better chance of fitting you in the schedule.</p>
     <p>Click preferred time slots a 2nd time to star. We'll do our best to schedule you in preferred time slots first.</p>
-    <p><em>You are only committing to one 2-4 hour time slot during the marathon according to your preferences.</em></p>
+    <p>You are only committing to <em>one time slot</em> during the weekend respecting your available time and maximum
+      slot length. A preferred slot length of 3 or 4 hours does not guarantee a longer time slot; we only schedule
+      time slots longer than two hours when required to fill the schedule.</p>
     <p>Click, tap, or click-and-drag to mark or unmark time slots.</p>
     <p>Availabilities are saved automatically, you can change your options at any time while sign-ups are open.</p>
     <table class="schedule-table">

@@ -5,6 +5,7 @@
   import SignUpSaveState from './_SignUpSaveState.vue';
   const model = defineModel();
   const props = defineProps<({
+    eventTitle: string,
     username: string,
     startTime: string,
     endTime: string,
@@ -26,7 +27,7 @@
     <SignUpSaveState :saveState="props.saveState" />
     <form ref="form">
       <h3>
-        Thank you for signing up for the Spring 2024 event!
+        Thank you for signing up for the {{eventTitle}} event!
       </h3>
       <p>
         Please complete the checklist below to ensure you are ready to stream.
