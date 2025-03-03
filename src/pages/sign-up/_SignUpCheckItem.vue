@@ -16,10 +16,10 @@
 </script>
 
 <template>
-  <p class="description-container" @click="checkItem"><span class="checkbox">{{(model) ? '✅' : '❎'}}</span><slot name="description"></slot></p>
+  <p class="description-container" @click="checkItem"><span class="checkbox">{{(model) ? '✅' : '⬜'}}</span><slot name="description"></slot></p>
   <div v-if="$slots.instructions">
     <span @click="toggleInstructions" class="toggle-instructions"><span class="caret" :class="{ 'rotate-down': showInstructions }">&#x25B6;</span>How do I do this?</span>
-    <p :style="{ height: (showInstructions) ? props.instructionsHeight : 0 }" class="instructions-container"><slot name="instructions"></slot></p>
+    <p :style="{ height: showInstructions ? props.instructionsHeight : '0px' }" class="instructions-container"><slot name="instructions"></slot></p>
   </div>
 </template>
 
