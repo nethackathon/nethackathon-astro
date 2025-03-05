@@ -144,14 +144,15 @@ export function useSchedule(
     return timeSlots.value.filter(slot => day.overlaps(slot));
   }
 
-  function availableStreamersForSlot(slot: Interval): { username: string, preference: number }[] {
+  function availableStreamersForSlot(slot: Interval): { username: string, preference: number, slotLength: number }[] {
     return streamerAvailability.value.map((streamerSchedule: StreamerSchedule) => {
+      const slotLength = streamerSchedule.slot_length === '3 hours' ? 3 : streamerSchedule.slot_length === '4 hours' ? 4 : 2;
       for (const [timestamp, preference] of Object.entries(streamerSchedule.schedule)) {
         if (preference > 0 && slot.contains(DateTime.fromMillis(parseInt(timestamp)))) {
-          return { username: streamerSchedule.username, preference };
+          return { username: streamerSchedule.username, preference, slotLength };
         }
       }
-      return { username: streamerSchedule.username, preference: 0 };
+      return { username: streamerSchedule.username, preference: 0, slotLength };
     }).filter(s => s.preference > 0);
   }
 

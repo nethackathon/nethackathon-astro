@@ -299,7 +299,7 @@ const commonTimezones = computed(() => [
                 draggable="true"
                 @dragstart="handleDragStart($event, streamer.username)"
                 class="draggable-name">
-                {{ streamer.preference === 2 ? '⭐' : '' }}{{ streamer.username }}
+                {{ streamer.preference === 2 ? '⭐' : '' }}{{ streamer.username }}{{ streamer.slotLength === 3 ? '③' : streamer.slotLength === 4 ? '④' : '' }}
               </span>
             </td>
             <td 
