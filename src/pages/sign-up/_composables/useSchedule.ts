@@ -56,8 +56,36 @@ export function useSchedule(
 
   const days = computed(() => {
     if (!startDate.value || !endDate.value) return [];
-    return Interval.fromDateTimes(startDate.value, endDate.value)
-      .splitBy({ days: 1 });
+
+    const localStartDate = startDate.value.setZone(selectedTimezone.value);
+    const localEndDate = endDate.value.setZone(selectedTimezone.value);
+
+    const startOfFirstDay = localStartDate.startOf('day');
+    const endOfLastDay = localEndDate.endOf('day');
+
+    const dayIntervals = [];
+
+    let currentDay = startOfFirstDay;
+    while (currentDay < endOfLastDay) {
+      const nextDay = currentDay.plus({ days: 1 }).startOf('day');
+
+      const intervalStart = DateTime.max(
+        currentDay,
+        localStartDate
+      ).setZone('utc');
+
+      const intervalEnd = DateTime.min(
+        nextDay,
+        localEndDate
+      ).setZone('utc');
+
+      const dayInterval = Interval.fromDateTimes(intervalStart, intervalEnd);
+      dayIntervals.push(dayInterval);
+
+      currentDay = nextDay;
+    }
+
+    return dayIntervals;
   });
 
   const schedule = computed(() => {
