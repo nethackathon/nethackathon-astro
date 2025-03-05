@@ -317,11 +317,7 @@ section.login {
   float: right;
 }
 
-nav.sub {
-  grid-column: 1 / 3;
-}
-
 nav.sub > a {
   font-size: 12pt;
 }
-</style>./_Admin.vue
+</style>

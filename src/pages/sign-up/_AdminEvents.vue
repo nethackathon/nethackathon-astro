@@ -183,15 +183,27 @@ table {
   margin: 1rem 0;
 }
 
+html[data-theme="dark"] th {
+  background-color: var(--color-dark-highlight);
+}
+html[data-theme="light"] th {
+  background-color: var(--color-light-highlight);
+}
+
+html[data-theme="dark"] td {
+  border-bottom: 1px solid var(--color-light);
+}
+html[data-theme="light"] td {
+  border-bottom: 1px solid var(--color-dark);
+}
+
 th, td {
   padding: 0.5rem;
   text-align: left;
-  border-bottom: 1px solid var(--color-light);
   font-size: 0.9rem;
 }
 
 th {
-  background-color: var(--color-dark-highlight);
   font-weight: normal;
 }
 

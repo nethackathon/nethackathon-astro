@@ -87,6 +87,8 @@ const { lastEvent } = await response.json();
     padding: 0 1em;
     border: 1px solid;
     border-radius: 3px;
+    max-width: 100%;
+    overflow-x: auto;
   }
   section a,
   section h2,
@@ -130,6 +132,10 @@ const { lastEvent } = await response.json();
     }
   }
   @media (max-width: 959px) {
+    #nethackathon-logo {
+      width: 80%;
+      margin: 0 auto;
+    }
     header {
       grid-template-columns: 1fr;
     }
@@ -142,30 +148,27 @@ const { lastEvent } = await response.json();
     color: var(--color-light);
     background: var(--color-dark);
   }
-  section[data-theme="dark"] {
+  html[data-theme="dark"] section {
     border-color: var(--color-light);
   }
   html[data-theme="light"] {
     color: var(--color-dark);
     background: var(--color-light);
   }
-  section[data-theme="light"] {
+  html[data-theme="light"] section {
     border-color: var(--color-dark);
   }
   .hidden {
     display: none !important;
   }
 
-  @media (prefers-color-scheme: dark) {
-    nav a:hover {
-      background-color: var(--color-dark-highlight);
-    }
+  html[data-theme="dark"] nav a:hover {
+    background-color: var(--color-dark-highlight);
   }
-  @media (prefers-color-scheme: light) {
-    nav a:hover {
-      background-color: var(--color-light-highlight);
-    }
+  html[data-theme="light"] nav a:hover {
+    background-color: var(--color-light-highlight);
   }
+
   nav {
     display: flex;
     flex-wrap: wrap;

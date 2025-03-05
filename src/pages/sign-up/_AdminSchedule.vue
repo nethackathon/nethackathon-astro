@@ -295,11 +295,11 @@ const commonTimezones = computed(() => [
             <td>
               <span 
                 v-for="streamer in slotInfo.availableStreamers" 
-                :key="streamer"
+                :key="streamer.username"
                 draggable="true"
-                @dragstart="handleDragStart($event, streamer)"
+                @dragstart="handleDragStart($event, streamer.username)"
                 class="draggable-name">
-                {{ streamer }}
+                {{ streamer.preference === 2 ? '⭐' : '' }}{{ streamer.username }}
               </span>
             </td>
             <td 
@@ -389,13 +389,27 @@ table {
 th, td {
   padding: 0.5rem;
   text-align: left;
-  border-bottom: 1px solid var(--color-light);
   font-size: 0.9rem;
 }
 
+html[data-theme="dark"] td {
+  border-bottom: 1px solid var(--color-light);
+}
+
+html[data-theme="light"] td {
+  border-bottom: 1px solid var(--color-dark);
+}
+
 th {
-  background-color: var(--color-dark-highlight);
   font-weight: normal;
+}
+
+html[data-theme="dark"] th {
+  background-color: var(--color-dark-highlight);
+}
+
+html[data-theme="light"] th {
+  background-color: var(--color-light-highlight);
 }
 
 .edit-button {
@@ -421,17 +435,32 @@ th {
 }
 
 .dateHeader {
-  background-color: var(--color-dark-highlight);
   font-weight: bold;
+}
+
+html[data-theme="dark"] .dateHeader {
+  background-color: var(--color-dark-highlight);
+}
+
+html[data-theme="light"] .dateHeader {
+  background-color: var(--color-light-highlight);
 }
 
 .draggable-name {
   display: inline-block;
   padding: 2px 6px;
   margin: 2px;
-  background-color: var(--color-dark-highlight);
   border-radius: 4px;
   cursor: move;
+  white-space: nowrap;
+}
+
+html[data-theme="dark"] .draggable-name {
+  background-color: var(--color-dark-highlight);
+}
+
+html[data-theme="light"] .draggable-name {
+  background-color: var(--color-light-highlight);
 }
 
 .droppable-cell {

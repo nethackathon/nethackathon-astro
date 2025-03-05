@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import { computed } from 'vue';
   import { eventDateString } from '../../js/shared.js';
-  import { NHEvent } from '../../types/NHEvent.js';
+  import type { NHEvent } from '../../types/NHEvent.js';
 
   const props = defineProps<({
     nodeApi: String,
