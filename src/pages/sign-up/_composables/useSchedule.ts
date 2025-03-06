@@ -1,6 +1,7 @@
+import Streamers from '../../../components/Streamers.astro';
 import type { ScheduleSlot } from '../_interfaces/EventSchedule';
 import type { StreamerSchedule } from '../_interfaces/StreamerSchedules';
-import { DateTime, Interval } from 'luxon';
+import { DateTime, Duration, Interval } from 'luxon';
 import { ref, computed, watch, type Ref } from 'vue';
 
 export function useSchedule(
@@ -10,6 +11,13 @@ export function useSchedule(
   initialScheduledSlots: Ref<ScheduleSlot[]>,
   selectedTimezone: Ref<string>
 ) {
+
+  interface Streamer {
+    username: string;
+    preference: number;
+    slotLength: number;
+  }
+
   function deepClone<T>(obj: T): T {
     try {
       return JSON.parse(JSON.stringify(obj));
@@ -109,7 +117,7 @@ export function useSchedule(
     return result;
   });
 
-  const mergedSchedule = computed(() => {
+  const mergedSchedule: Ref<ScheduleSlot[]> = computed(() => {
     const collapsedSchedule = JSON.parse(JSON.stringify(scheduledSlots.value));
 
     let mergeOperation;
@@ -124,6 +132,60 @@ export function useSchedule(
     }
 
     return collapsedSchedule;
+  });
+
+  const scheduleIssues = computed(() => {
+    const issues: string[] = [];
+
+    const scheduledMoreThanOnce = mergedSchedule.value
+      .filter(
+        (slot, index, arr) => arr.findIndex(s => s.username === slot.username) !== index
+      )
+      .map(slot => slot.username)
+      .filter((username, index, arr) => arr.indexOf(username) === index);
+
+    if (scheduledMoreThanOnce.length > 0) {
+      issues.push(`${scheduledMoreThanOnce.length} streamers scheduled more than once: ${scheduledMoreThanOnce.join(', ')}`);
+    }
+
+    const scheduledTooLong = mergedSchedule.value
+      .filter(slot => {
+        const slotLength = Interval.fromDateTimes(DateTime.fromISO(slot.start_time), DateTime.fromISO(slot.end_time))
+          .toDuration('minutes').toMillis();
+        const streamerSchedule = streamerAvailability.value.find(s => s.username === slot.username);
+        if (!streamerSchedule) return false;
+        const streamerSlotLength = streamerSchedule.slot_length === '3 hours' ? 3 : streamerSchedule.slot_length === '4 hours' ? 4 : 2;
+        return slotLength > streamerSlotLength * 60 * 60 * 1000;
+      })
+      .map(slot => slot.username);
+
+    if (scheduledTooLong.length > 0) {
+      issues.push(`${scheduledTooLong.length} streamers scheduled for too long: ${scheduledTooLong.join(', ')}`);
+    }
+
+    const scheduledWhenUnavailable = mergedSchedule.value
+      .filter(slot => {
+        const fullSlot = Interval.fromDateTimes(DateTime.fromISO(slot.start_time), DateTime.fromISO(slot.end_time));
+        const subSlots = fullSlot.splitBy({ minutes: 30 });
+        const streamerAvailableForFullSlot = subSlots.every(subSlot => availableStreamersForSlot(subSlot).some(s => s.username === slot.username));
+        return !streamerAvailableForFullSlot;
+      })
+      .map(slot => slot.username)
+      .filter((username, index, arr) => arr.indexOf(username) === index);
+
+    if (scheduledWhenUnavailable.length > 0) {
+      issues.push(`${scheduledWhenUnavailable.length} streamers scheduled when unavailable: ${scheduledWhenUnavailable.join(', ')}`);
+    }
+
+    const unscheduledStreamers = streamerAvailability.value
+      .filter(streamer => !mergedSchedule.value.some(slot => slot.username === streamer.username))
+      .map(streamer => streamer.username);
+
+    if (unscheduledStreamers.length > 0) {
+      issues.push(`${unscheduledStreamers.length} streamers not scheduled: ${unscheduledStreamers.join(', ')}`);
+    }
+
+    return issues;
   });
 
   function formattedDay(day: Interval) {
@@ -144,7 +206,7 @@ export function useSchedule(
     return timeSlots.value.filter(slot => day.overlaps(slot));
   }
 
-  function availableStreamersForSlot(slot: Interval): { username: string, preference: number, slotLength: number }[] {
+  function availableStreamersForSlot(slot: Interval): Streamer[] {
     return streamerAvailability.value.map((streamerSchedule: StreamerSchedule) => {
       const slotLength = streamerSchedule.slot_length === '3 hours' ? 3 : streamerSchedule.slot_length === '4 hours' ? 4 : 2;
       for (const [timestamp, preference] of Object.entries(streamerSchedule.schedule)) {
@@ -253,6 +315,7 @@ export function useSchedule(
     unscheduleStreamer,
     updateNotes,
     saveSchedule,
-    updateFullSchedule
+    updateFullSchedule,
+    scheduleIssues
   };
 } 

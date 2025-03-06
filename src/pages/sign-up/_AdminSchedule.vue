@@ -39,7 +39,8 @@ const {
   unscheduleStreamer,
   updateNotes,
   saveSchedule,
-  updateFullSchedule
+  updateFullSchedule,
+  scheduleIssues
 } = useSchedule(
   eventStartTime,
   eventEndTime,
@@ -245,6 +246,12 @@ const commonTimezones = computed(() => [
               {{ tz.label }}
             </option>
           </select>
+        </div>
+        <div v-if="scheduleIssues.length > 0" class="schedule-issues">
+          <h3>Issues</h3>
+          <ul>
+            <li v-for="issue in scheduleIssues" :key="issue" class="schedule-issue">{{ issue }}</li>
+          </ul>
         </div>
       </div>
       <div>
