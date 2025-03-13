@@ -21,10 +21,10 @@
     "webfontloader": "^1.0.0"
   },
   "devDependencies": {
-    "@astrojs/vue": "^0.5.0",
+    "@astrojs/vue": "^5.0.7",
     "@types/lodash-es": "^4.17.12",
     "@types/luxon": "^3.4.2",
-    "astro": "^4.4.9",
+    "astro": "^5.5.2",
     "vue-cli-plugin-vuetify": "~2.5.1",
     "webpack-plugin-vuetify": "^2.0.0-alpha.0"
   }

@@ -9,12 +9,13 @@ import { debounce } from 'lodash-es';
 import { ref, watch, computed } from 'vue';
 import { useSchedule } from './_composables/useSchedule';
 
-const selectedEvent = ref<NHEvent | null>(null);
 const eventSchedule = ref<EventSchedule | null>(null);
 const streamerSchedules = ref<StreamerSchedule[]>([]);
 const dragging = ref(false);
 const loading = ref(true);
+const saving = ref(false);
 const schedulePublished = ref(false);
+const selectedEvent = ref<NHEvent | null>(null);
 
 const importJsonText = ref('');
 const importError = ref('');
@@ -23,6 +24,12 @@ const props = defineProps<({
   nodeApi: String,
   events: NHEvent[],
 })>();
+
+watch(() => props.events, (newEvents) => {
+  if (newEvents.length > 0 && !selectedEvent.value) {
+    selectedEvent.value = newEvents[newEvents.length - 1];
+  }
+}, { immediate: true });
 
 const eventStartTime = computed(() => selectedEvent.value?.event_start || '');
 const eventEndTime = computed(() => selectedEvent.value?.event_end || '');
@@ -38,7 +45,6 @@ const {
   scheduleStreamer,
   unscheduleStreamer,
   updateNotes,
-  saveSchedule,
   updateFullSchedule,
   scheduleIssues
 } = useSchedule(
@@ -117,6 +123,7 @@ async function handleSaveSchedule() {
   if (!selectedEvent.value?.id) return;
   
   try {
+    saving.value = true;
     const response = await fetch(`${props.nodeApi}/event/${selectedEvent.value.id}/schedule`, {
       method: 'PUT',
       credentials: 'include',
@@ -130,9 +137,11 @@ async function handleSaveSchedule() {
     
     if (!response.ok) throw new Error('Failed to save schedule');
     
-    saveSchedule();
+    eventSchedule.value = await fetchEventSchedule(selectedEvent.value.id);
   } catch (error) {
     console.error('Error saving schedule:', error);
+  } finally {
+    saving.value = false;
   }
 }
 
@@ -265,9 +274,9 @@ const commonTimezones = computed(() => [
             </button>
             <button 
               @click="handleSaveSchedule"
-              :disabled="!scheduleModified"
+              :disabled="!scheduleModified || saving"
               class="save-button">
-              {{ scheduleModified ? '*Save Schedule' : 'Save Schedule' }}
+              {{ saving ? 'Saving...' : scheduleModified ? '*Save Schedule' : 'Save Schedule' }}
             </button>
           </div>
           <select v-model="selectedEvent">

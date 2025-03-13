@@ -297,11 +297,6 @@ export function useSchedule(
     scheduledSlots.value = [...scheduledSlots.value];
   }
 
-  function saveSchedule() {
-    scheduledSlots.value = deepClone(mergedSchedule.value);
-    return mergedSchedule.value;
-  }
-
   function updateFullSchedule(newSchedule: ScheduleSlot[]) {
     scheduledSlots.value = deepClone(newSchedule);
   }
@@ -314,7 +309,6 @@ export function useSchedule(
     scheduleStreamer,
     unscheduleStreamer,
     updateNotes,
-    saveSchedule,
     updateFullSchedule,
     scheduleIssues
   };

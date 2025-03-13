@@ -1,21 +1,23 @@
 ---
-import EventCountdown from "../components/EventCountdown.astro";
 import {
   areSignupsActive,
   areSignupsUpcoming,
   haveSignupsConcluded,
 } from "../js/event.js";
+import EventCountdown from "../components/EventCountdown.astro";
+import Schedule from "./Schedule.astro";
 import SignupCountdown from "./SignupCountdown.astro";
 
 const { currentEvent } = Astro.props;
+
+const schedulePublished = currentEvent.schedule_published === 1;
 
 const signupsActive = areSignupsActive(currentEvent);
 const signupsUpcoming = areSignupsUpcoming(currentEvent);
 const signupsConcluded = haveSignupsConcluded(currentEvent);
 
-const streamersRes = await fetch(
-  `${import.meta.env.NODE_API}/event/current/schedule`,
-);
+const nodeApi = import.meta.env.NODE_API;
+const streamersRes = await fetch(`${nodeApi}/event/current/schedule`);
 const schedule = await streamersRes.json();
 const streamers = schedule.map((s) => s.username);
 const deduped = streamers.filter((u, i) => streamers.indexOf(u) === i);
@@ -24,3 +26,5 @@ const deduped = streamers.filter((u, i) => streamers.indexOf(u) === i);
 <EventCountdown currentEvent={currentEvent} nStreamers={deduped.length} />
 
 {signupsActive && <SignupCountdown currentEvent={currentEvent} />}
+
+{schedulePublished && <Schedule nodeApi={nodeApi} />}

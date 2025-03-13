@@ -1,25 +1,32 @@
-<h2>
-  Schedule <span style="font-size: medium;"
-    >All times <span id="time-zone">UTC</span></span
-  >
-</h2>
-<table>
-  <colgroup>
-    <col style="width: 6em;" />
-    <col style="width: 7em;" />
-    <col style="width: 10em;" />
-    <col />
-  </colgroup>
-  <thead>
-    <tr>
-      <th class="hide-second"></th>
-      <th>Date</th>
-      <th>Channel</th>
-      <th class="hide-first">Notes</th>
-    </tr>
-  </thead>
-  <tbody id="schedule-tbody"></tbody>
-</table>
+---
+const { nodeApi } = Astro.props;
+const scheduleEndpoint = `${nodeApi}/event/current/schedule`;
+---
+
+<section class="double c">
+  <h2>
+    Schedule <span style="font-size: medium;"
+      >All times <span id="time-zone">UTC</span></span
+    >
+  </h2>
+  <table>
+    <colgroup>
+      <col style="width: 6em;" />
+      <col style="width: 7em;" />
+      <col style="width: 10em;" />
+      <col />
+    </colgroup>
+    <thead>
+      <tr>
+        <th class="hide-second"></th>
+        <th>Date</th>
+        <th>Channel</th>
+        <th class="hide-first">Notes</th>
+      </tr>
+    </thead>
+    <tbody id="schedule-tbody"></tbody>
+  </table>
+</section>
 
 <style is:global>
   table {
@@ -55,26 +62,47 @@
   }
 </style>
 
-<script client:load>
-  import { DateTime } from "luxon";
-
-  function parseStartTime(start: string) {
-    const dateTime = DateTime.fromISO(start);
+<script is:inline define:vars={{ scheduleEndpoint }}>
+  function parseStartTime(isoString) {
+    const date = new Date(isoString);
     return {
-      day: dateTime.weekdayLong,
-      time: dateTime.toLocaleString(DateTime.TIME_SIMPLE),
+      day: getWeekdayLong(date),
+      time: formatTime(date),
     };
+  }
+
+  function getWeekdayLong(date) {
+    const day = date.toLocaleDateString(undefined, { weekday: "long" });
+    const monthAndDate = date.toLocaleDateString(undefined, {
+      month: "long",
+      day: "numeric",
+    });
+    return `${day}, ${monthAndDate}`;
+  }
+
+  function formatTime(date) {
+    return date.toLocaleTimeString(undefined, {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    });
+  }
+
+  function getTimezoneAbbreviation() {
+    const options = { timeZoneName: "short" };
+    const timeZoneString = new Intl.DateTimeFormat("en-US", options)
+      .formatToParts(new Date())
+      .find((part) => part.type === "timeZoneName").value;
+    return timeZoneString;
   }
 
   async function loadSchedule() {
     const scheduleTbody = document.getElementById("schedule-tbody");
-    const response = await fetch(
-      "https://api.nethackathon.org/event/current/schedule",
-    );
+    const response = await fetch(scheduleEndpoint);
     const data = await response.json();
     const timeZone = document.getElementById("time-zone");
     if (!timeZone) return;
-    timeZone.textContent = DateTime.local().offsetNameShort;
+    timeZone.textContent = getTimezoneAbbreviation();
     let lastWeekday = "";
     data.forEach((streamer) => {
       const tr = document.createElement("tr");
@@ -107,10 +135,13 @@
   function highlightCurrentStreamer() {
     const trs = document.getElementsByClassName("schedule-row");
     let currentStreamer = false;
+    const now = new Date();
+
     for (let i = trs.length - 1; i > -1; i--) {
       const td = trs[i].getElementsByClassName("start-time")[0];
-      const dateTime = DateTime.fromISO(td.dataset.start).toLocal();
-      if (!currentStreamer && dateTime < DateTime.local()) {
+      const streamStartTime = new Date(td.dataset.start);
+
+      if (!currentStreamer && streamStartTime < now) {
         currentStreamer = true;
         trs[i].classList.add("current-streamer");
       } else {
