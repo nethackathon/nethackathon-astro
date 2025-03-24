@@ -253,13 +253,13 @@ onMounted(async () => {
 
 <template>
   <nav class="sub" v-if="state.loggedIn">
-    <a v-if="signup.isAdmin" href="#/admin">Admin</a>
-    <a v-if="eventUpcoming" href="#/">Preferences</a>
-    <a v-if="eventUpcoming" href="#/availability">Availability</a>
-    <a v-if="eventUpcoming" href="#/checklist">Checklist</a>
-    <a v-if="eventActive || eventConcluded" href="#/media">Media</a>
-    <a v-if="eventActive || eventConcluded" href="#/survey">Survey</a>
-    <a href="#/faq">FAQ</a>
+    <a :class="{ active: currentView.startsWith('/admin') }" v-if="signup.isAdmin" href="#/admin">Admin</a>
+    <a :class="{ active: currentView === '/' }" v-if="eventUpcoming" href="#/">Preferences</a>
+    <a :class="{ active: currentView === '/availability' }" v-if="eventUpcoming" href="#/availability">Availability</a>
+    <a :class="{ active: currentView === '/checklist' }" v-if="eventUpcoming" href="#/checklist">Checklist</a>
+    <a :class="{ active: currentView === '/media' }" v-if="eventActive || eventConcluded" href="#/media">Media</a>
+    <a :class="{ active: currentView === '/survey' }" v-if="eventActive || eventConcluded" href="#/survey">Survey</a>
+    <a :class="{ active: currentView === '/faq' }" href="#/faq">FAQ</a>
   </nav>
   <SignIn
       v-if="!state.loggedIn"
@@ -267,7 +267,7 @@ onMounted(async () => {
       :currentEvent="props.currentEvent"
   />
   <Admin
-    v-if="signup.isAdmin && currentView === '/admin'"
+    v-if="signup.isAdmin && currentView.startsWith('/admin')"
     :nodeApi="props.nodeApi"
   />
   <SignUpChecklist

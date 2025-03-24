@@ -8,4 +8,9 @@ export interface NHEvent {
   streamer_count: number;
   editing: boolean;
   schedule_published: boolean;
+  charity_name?: string;
+  charity_description?: string;
+  charity_url?: string;
+  giving_url?: string;
+  api_endpoint?: string;
 }

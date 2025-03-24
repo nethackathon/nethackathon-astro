@@ -8,10 +8,12 @@ const props = defineProps<({
   nodeApi: String,
   events: NHEvent[],
   loading: boolean,
+  selectedEvent: NHEvent | null,
 })>();
 
 const emit = defineEmits<{
   (e: 'update:events'): void
+  (e: 'update:selected-event', event: NHEvent): void
 }>();
 
 const editingModel = ref<NHEvent | null>(null);
@@ -98,7 +100,12 @@ const isModified = computed(() => {
         </tr>
       </thead>
       <tbody>
-        <tr v-for="event in props.events" :key="event.id || 'new'">
+        <tr
+          v-for="event in props.events"
+          :key="event.id || 'new'"
+          :class="{ 'selected': event.id === selectedEvent?.id }"
+          @click="emit('update:selected-event', event)"
+        >
           <td>{{ event.id || 'New' }}</td>
           <td>
             <input
@@ -188,6 +195,13 @@ html[data-theme="dark"] th {
 }
 html[data-theme="light"] th {
   background-color: var(--color-light-highlight);
+}
+
+html[data-theme="dark"] tr.selected td {
+  background-color: var(--color-c);
+}
+html[data-theme="light"] tr.selected td {
+  background-color: var(--color-c);
 }
 
 html[data-theme="dark"] td {

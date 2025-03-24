@@ -15,7 +15,6 @@ const dragging = ref(false);
 const loading = ref(true);
 const saving = ref(false);
 const schedulePublished = ref(false);
-const selectedEvent = ref<NHEvent | null>(null);
 
 const importJsonText = ref('');
 const importError = ref('');
@@ -23,16 +22,11 @@ const importError = ref('');
 const props = defineProps<({
   nodeApi: String,
   events: NHEvent[],
+  selectedEvent: NHEvent | null,
 })>();
 
-watch(() => props.events, (newEvents) => {
-  if (newEvents.length > 0 && !selectedEvent.value) {
-    selectedEvent.value = newEvents[newEvents.length - 1];
-  }
-}, { immediate: true });
-
-const eventStartTime = computed(() => selectedEvent.value?.event_start || '');
-const eventEndTime = computed(() => selectedEvent.value?.event_end || '');
+const eventStartTime = computed(() => props.selectedEvent?.event_start || '');
+const eventEndTime = computed(() => props.selectedEvent?.event_end || '');
 const scheduledSlots = computed(() => eventSchedule.value?.schedule || []);
 
 const selectedTimezone = ref(Intl.DateTimeFormat().resolvedOptions().timeZone);
@@ -56,7 +50,7 @@ const {
 );
 
 watch(
-  () => selectedEvent.value,
+  () => props.selectedEvent,
   async (newEvent) => {
     if (!newEvent) {
       eventSchedule.value = null;
@@ -108,7 +102,7 @@ function handleDragStart(event: DragEvent, streamer: string) {
 
 function handleDrop(event: DragEvent, slot: Interval) {
   event.preventDefault();
-  if (!event.dataTransfer || !selectedEvent.value?.id) return;
+  if (!event.dataTransfer || !props.selectedEvent?.id) return;
   
   const data = JSON.parse(event.dataTransfer.getData('application/json'));
   scheduleStreamer(data.streamer, slot);
@@ -120,11 +114,11 @@ function handleDragOver(event: DragEvent) {
 }
 
 async function handleSaveSchedule() {
-  if (!selectedEvent.value?.id) return;
+  if (!props.selectedEvent?.id) return;
   
   try {
     saving.value = true;
-    const response = await fetch(`${props.nodeApi}/event/${selectedEvent.value.id}/schedule`, {
+    const response = await fetch(`${props.nodeApi}/event/${props.selectedEvent.id}/schedule`, {
       method: 'PUT',
       credentials: 'include',
       headers: {
@@ -137,7 +131,7 @@ async function handleSaveSchedule() {
     
     if (!response.ok) throw new Error('Failed to save schedule');
     
-    eventSchedule.value = await fetchEventSchedule(selectedEvent.value.id);
+    eventSchedule.value = await fetchEventSchedule(props.selectedEvent.id);
   } catch (error) {
     console.error('Error saving schedule:', error);
   } finally {
@@ -146,10 +140,10 @@ async function handleSaveSchedule() {
 }
 
 async function handlePublishSchedule() {
-  if (!selectedEvent.value?.id) return;
+  if (!props.selectedEvent?.id) return;
   
   try {
-    const response = await fetch(`${props.nodeApi}/event/${selectedEvent.value.id}/schedule/publish`, {
+    const response = await fetch(`${props.nodeApi}/event/${props.selectedEvent.id}/schedule/publish`, {
       method: 'PUT',
       credentials: 'include',
       headers: {
@@ -267,7 +261,7 @@ const commonTimezones = computed(() => [
         <div class="flex-column">
           <div class="flex-row">
             <button 
-              v-if="selectedEvent?.id"
+              v-if="props.selectedEvent?.id"
               @click="handlePublishSchedule"
               class="save-button">
               {{ schedulePublished ? 'Unpublish Schedule' : 'Publish Schedule' }}
@@ -279,15 +273,12 @@ const commonTimezones = computed(() => [
               {{ saving ? 'Saving...' : scheduleModified ? '*Save Schedule' : 'Save Schedule' }}
             </button>
           </div>
-          <select v-model="selectedEvent">
-            <option v-for="event in props.events" :key="event.id" :value="event">{{ event.title }}</option>
-          </select>
         </div>
       </div>
     </div>
 
-    <div v-if="selectedEvent && loading">Loading schedule...</div>
-    <div v-if="selectedEvent && !loading && eventSchedule">
+    <div v-if="props.selectedEvent && loading">Loading schedule...</div>
+    <div v-if="props.selectedEvent && !loading && eventSchedule">
       <table>
         <thead>
           <tr>
