@@ -27,7 +27,9 @@ const eventConcluded = hasEventConcluded(currentEvent);
         {eventConcluded && !eventUpcoming && (
           <MainConcluded currentEvent={currentEvent} />
         )}
-        {eventUpcoming && <MainUpcoming currentEvent={currentEvent} />}
+        {!eventActive && eventUpcoming && (
+          <MainUpcoming currentEvent={currentEvent} />
+        )}
       </>
     )
   }
