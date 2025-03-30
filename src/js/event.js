@@ -1,8 +1,7 @@
 export function isEventActive(event) {
   const now = new Date().toISOString();
   return (
-    now > event.event_start &&
-    now < event.event_end
+    event.schedule_published === 1
   );
 }
 

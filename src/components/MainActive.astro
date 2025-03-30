@@ -1,9 +1,17 @@
 ---
-import Schedule from "./Schedule.astro";
 import CurrentStreamer from "./CurrentStreamer.astro";
+import EventCountdown from "../components/EventCountdown.astro";
+import Schedule from "./Schedule.astro";
 
 const { currentEvent } = Astro.props;
+const nodeApi = import.meta.env.NODE_API;
+console.log(nodeApi);
+const streamersRes = await fetch(`${nodeApi}/event/current/schedule`);
+const schedule = await streamersRes.json();
+const streamers = schedule.map((s) => s.username);
+const deduped = streamers.filter((u, i) => streamers.indexOf(u) === i);
 ---
 
+<EventCountdown currentEvent={currentEvent} nStreamers={deduped.length} />
 <CurrentStreamer currentEvent={currentEvent} />
-<Schedule />
+<Schedule nodeApi={nodeApi} />
