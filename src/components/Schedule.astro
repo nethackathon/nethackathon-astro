@@ -11,14 +11,12 @@ const scheduleEndpoint = `${nodeApi}/event/current/schedule`;
   </h2>
   <table>
     <colgroup>
-      <col style="width: 6em;" />
-      <col style="width: 7em;" />
+      <col class="date-col" />
       <col style="width: 10em;" />
       <col />
     </colgroup>
     <thead>
       <tr>
-        <th class="hide-second"></th>
         <th>Date</th>
         <th>Channel</th>
         <th class="hide-first">Notes</th>
@@ -47,16 +45,17 @@ const scheduleEndpoint = `${nodeApi}/event/current/schedule`;
   td[data-theme="light"] {
     border-bottom-color: var(--color-dark);
   }
+  .date-col {
+    width: 14em;
+  }
   tr.current-streamer {
     background-color: rgba(150, 149, 248, 0.5);
   }
   @media (max-width: 800px) {
-    .hide-first {
-      display: none;
+    .date-col {
+      width: 7em;
     }
-  }
-  @media (max-width: 515px) {
-    .hide-second {
+    .hide-first {
       display: none;
     }
   }
@@ -108,18 +107,14 @@ const scheduleEndpoint = `${nodeApi}/event/current/schedule`;
       const tr = document.createElement("tr");
       tr.classList.add("schedule-row");
       const startTime = parseStartTime(streamer.start_time);
-      const td0 = document.createElement("td");
-      td0.classList.add("weekday");
-      td0.classList.add("hide-second");
-      if (startTime.day !== lastWeekday) {
-        lastWeekday = startTime.day;
-        td0.innerHTML = startTime.day;
-      }
-      tr.appendChild(td0);
       const td1 = document.createElement("td");
       td1.classList.add("start-time");
       td1.dataset.start = streamer.start_time;
       td1.innerHTML = startTime.time;
+      if (startTime.day !== lastWeekday) {
+        lastWeekday = startTime.day;
+        td1.innerHTML = `${startTime.day}, ${startTime.time}`;
+      }
       tr.appendChild(td1);
       const td2 = document.createElement("td");
       td2.innerHTML = `<a href="https://twitch.tv/${streamer.username}">${streamer.username}</a>`;
