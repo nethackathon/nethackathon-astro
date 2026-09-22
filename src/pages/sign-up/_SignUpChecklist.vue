@@ -15,6 +15,8 @@
   const scheduledTime = computed(() => {
     const startTime = DateTime.fromISO(props.startTime);
     const endTime = DateTime.fromISO(props.endTime);
+    if (!startTime.isValid || !endTime.isValid) return null;
+
     const startString = startTime.toLocal().toFormat("EEEE MMMM d',' h:mma");
     const endFormat = (startTime.day === endTime.day) ? "h:mma" : "EEEE MMMM d',' h:mma";
     const endString = endTime.toLocal().toFormat(endFormat);
@@ -32,7 +34,7 @@
       <p>
         Please complete the checklist below to ensure you are ready to stream.
       </p>
-      <SignUpCheckItem instructions-height="4em" v-model="model.available">
+      <SignUpCheckItem v-if="scheduledTime" instructions-height="4em" v-model="model.available">
         <template #description>
           You have been scheduled to participate {{scheduledTime}}, are you available to stream during this time?
         </template>
