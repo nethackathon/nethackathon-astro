@@ -1,0 +1,28 @@
+package.json
+  h_9b5d5023fb6c97 12
+src/components/AscensionsDeaths.astro
+  h_9b5d5023fb6c97 2,5,9,15-16,18-19,23-25,27-38,40-41,46,48,53-54,59
+src/components/Livelog.astro
+  h_9b5d5023fb6c97 2-3,6,14-15,19,21,23,30-31,33-34,36-37,39,42
+src/components/MainActive.astro
+  h_9b5d5023fb6c97 5-6,16-21,24-25,27-32
+src/components/Schedule.astro
+  h_9b5d5023fb6c97 6
+src/pages/index.astro
+  h_9b5d5023fb6c97 20-21,28-30
+src/pages/sign-up/_SignUpChecklist.vue
+  h_9b5d5023fb6c97 99,101,115,120,144,160
+src/pages/sign-up/_SignUpForm.vue
+  h_9b5d5023fb6c97 24,27-29
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "ef0966f75b3bdc967f6bce48e52f46f0771b7e4a",
+  "prompts": {},
+  "humans": {
+    "h_9b5d5023fb6c97": {
+      "author": "disperse <disperse.recording@gmail.com>"
+    }
+  }
+}
