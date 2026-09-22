@@ -17,13 +17,17 @@ const currentEvent = response.currentEvent;
 const eventActive = isEventActive(currentEvent);
 const eventUpcoming = isEventUpcoming(currentEvent);
 const eventConcluded = hasEventConcluded(currentEvent);
+
+console.log(eventActive, eventUpcoming, eventConcluded);
 ---
 
 <MainLayout currentPage="home">
   {
     currentEvent && (
       <>
-        {eventActive && <MainActive currentEvent={currentEvent} />}
+        {!eventConcluded && eventActive && (
+          <MainActive currentEvent={currentEvent} />
+        )}
         {eventConcluded && !eventUpcoming && (
           <MainConcluded currentEvent={currentEvent} />
         )}

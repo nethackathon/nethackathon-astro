@@ -21,11 +21,12 @@
     <SignUpSaveState :saveState="props.saveState" />
     <h3>Sign Up</h3>
     <p>
-      There are three steps to sign up for the event:
+      There are four steps to sign up for the event:
     </p>
     <ol>
-      <li>Fill out the short form below, the form is saved automatically.</li>
-      <li>Click the <a href="#/availability">Availability</a> link above and select all time slots during the weekend where you are available to
+      <li><strong>Check the box</strong> below to indicate that you want to participate in the event.</li>
+      <li>Fill out the short form with your preferences, the form is saved automatically.</li>
+      <li>Click the <a href="#/availability">Availability</a> link and select all time slots during the weekend where you are available to
         stream.</li>
       <li>
         Join the NetHackathon Discord server at:

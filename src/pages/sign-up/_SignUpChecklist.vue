@@ -96,9 +96,9 @@
         <template #instructions>
           <p>
             Start up the terminal of your choice (for Windows users, a very popular choice is PuTTY), and connect (ssh)
-            to the closest Hardfought server: nethack@hardfought.org (US server, east coast), nethack@eu.hardfought.org
+            to the closest Hardfought server: nethack@us.hardfought.org (US server, east coast, <em>Note: the `us` in the domain is now required</em>), nethack@eu.hardfought.org
             (EU server, London), or nethack@au.hardfought.org (AU server, Sydney), for instance, to connect to the US
-            server type "ssh nethack@hardfought.org" in your terminal.
+            server type "ssh nethack@us.hardfought.org" in your terminal.
           </p>
           <p>
             Once you've connected to your preferred server type "r" to select the "Register new user" menu item and
@@ -112,12 +112,12 @@
       </SignUpCheckItem>
       <SignUpCheckItem instructions-height="8em" v-model="model.nethackrc">
         <template #description>
-          Have you set up and tested your NetHack configuration (nethackrc) for NetHack 3.7 on Hardfought?
+          Have you set up and tested your NetHack configuration (nethackrc) for NetHack 5.0 on Hardfought?
         </template>
         <template #instructions>
           <p>
             Log into your chosen Hardfought server and type "j" to select "Manage settings" then "v" to select
-            "NetHack 3.7.0-hdf" and edit your config there. You can also go to Hardfought's
+            "NetHack 5.0.0-hdf" and edit your config there. You can also go to Hardfought's
             <a target="new" href="https://www.hardfought.org/nethack/rcedit/rcedit-nethack/">web-based nethackrc editor</a>
             (which can be easier for copying and pasting into).
           </p>
@@ -141,7 +141,7 @@
       <SignUpCheckItem instructions-height="24em" v-model="model.copyrc">
         <template #description>
           At the start of your assigned slot, you will want to copy your NetHack configuration (nethackrc) from
-          the "NetHack 3.7.0-hdf" nethackrc that you have already configured and tested. Have you practiced copying your
+          the "NetHack 5.0.0-hdf" nethackrc that you have already configured and tested. Have you practiced copying your
           config from your account to the "nethackathon" account?
         </template>
         <template #instructions>
@@ -157,7 +157,7 @@
               Press `p` to "Choose another player" and type in the username of your hardfought account. <em>The username is case sensitive.</em>
             </li>
             <li>
-              Press `v` to "Choose another variant" and press `v` to choose "NetHack 3.7.0-hdf"
+              Press `v` to "Choose another variant" and press `v` to choose "NetHack 5.0.0-hdf"
             </li>
             <li>
               Press `d` to "Do it!"

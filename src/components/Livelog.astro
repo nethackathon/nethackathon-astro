@@ -1,52 +1,48 @@
 ---
-const { currentEvent } = Astro.props;
+const { nodeApi } = Astro.props;
+console.log(nodeApi);
 ---
 
-<section id="livelog-section" class="b double show-during" data-start={currentEvent.eventStart}>
+<section id="livelog-section" class="b double">
   <h3>Livelog</h3>
   <div id="livelog-textarea"></div>
 </section>
 
 <style>
-  .hidden {
-    display: none;
-  }
   #livelog-textarea {
     font-size: 12pt;
+    max-height: 10em;
+    overflow: scroll-y;
   }
 </style>
 
-<script>
+<script is:inline define:vars={{ nodeApi }}>
   function getListItems(messages) {
-    const list = document.createElement('ul');
+    const list = document.createElement("ul");
     messages.forEach((m) => {
-      const item = document.createElement('li');
+      const item = document.createElement("li");
       item.innerHTML = m.message;
       list.appendChild(item);
     });
     return list;
   }
 
-  async function getLivelog () {
-    const responses =  await Promise.all([
-      fetch(`https://api.nethackathon.org/livelog`)
-    ])
+  async function getLivelog() {
+    const responses = await Promise.all([fetch(`${nodeApi}/livelog`)]);
     const promises = responses.map((r) => r.json());
-    const json = await Promise.all(promises)
-    const livelog = [].concat.apply([], json)
-      .sort((l, m) => m.time - l.time );
+    const json = await Promise.all(promises);
+    const livelog = [].concat.apply([], json).sort((l, m) => m.time - l.time);
     const livelogList = getListItems(livelog);
-    const livelogSection = document.getElementById('livelog-section');
-    const livelogTextarea = document.getElementById('livelog-textarea');
+    const livelogSection = document.getElementById("livelog-section");
+    const livelogTextarea = document.getElementById("livelog-textarea");
     if (!livelogSection || !livelogTextarea) return;
-    livelogTextarea.innerText = '';
+    livelogTextarea.innerText = "";
     livelogTextarea.appendChild(livelogList);
   }
-  window.addEventListener('load', async () => {
+  window.addEventListener("load", async () => {
     await getLivelog();
     window.setInterval(async () => {
       await getLivelog();
     }, 5000);
   });
 </script>
-

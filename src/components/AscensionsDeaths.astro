@@ -1,58 +1,62 @@
 ---
-const { currentEvent } = Astro.props;
+const { nodeApi } = Astro.props;
 ---
 
-<section class="c show-during" data-start={currentEvent.eventStart}>
+<section class="c" id="ascensions-deaths">
   <h3>Ascensions</h3>
   <div id="ascensions"></div>
 </section>
-<section class="a show-during" data-start={currentEvent.eventStart}>
+<section class="a">
   <h3>Deaths</h3>
   <div id="deaths"></div>
 </section>
 
 <style>
-  #deaths, #ascensions {
+  #deaths,
+  #ascensions {
     font-size: 12pt;
+    max-height: 10em;
+    overflow: scroll-y;
   }
 </style>
 
-<script>
-  async function getEndedGames () {
-    const response = await Promise.all([
-      fetch(`https://api.nethackathon.org/endedGames`)
-    ])
+<script is:inline define:vars={{ nodeApi }}>
+  async function getEndedGames() {
+    const response = await Promise.all([fetch(`${nodeApi}/endedGames`)]);
     const promises = response.map((r) => r.json());
-    const json = await Promise.all(promises)
-    const endedGames = [].concat.apply([], json)
-      .sort((l, m) => parseInt(m.time) - parseInt(l.time) );
-    const deaths = endedGames
-      .filter((l) => l.message.indexOf('ascended') === -1);
-    const ascensions = endedGames
-      .filter((l) => l.message.indexOf('ascended') > -1);
-    const ascensionSection = document.getElementById('ascensions');
-    const deathSection = document.getElementById('deaths');
+    const json = await Promise.all(promises);
+    const endedGames = [].concat
+      .apply([], json)
+      .sort((l, m) => parseInt(m.time) - parseInt(l.time));
+    const deaths = endedGames.filter(
+      (l) => l.message.indexOf("ascended") === -1,
+    );
+    const ascensions = endedGames.filter(
+      (l) => l.message.indexOf("ascended") > -1,
+    );
+    const ascensionSection = document.getElementById("ascensions");
+    const deathSection = document.getElementById("deaths");
     if (!ascensionSection || !deathSection) return;
-    ascensionSection.innerHTML = '';
-    deathSection.innerHTML = '';
+    ascensionSection.innerHTML = "";
+    deathSection.innerHTML = "";
     ascensionSection.appendChild(getListItems(ascensions));
     deathSection.appendChild(getListItems(deaths));
   }
   function getListItems(messages) {
-    const list = document.createElement('ul');
+    const list = document.createElement("ul");
     messages.forEach((m) => {
-      const item = document.createElement('li');
+      const item = document.createElement("li");
       item.innerHTML = m.message;
       list.appendChild(item);
     });
     if (messages.length === 0) {
-      const item = document.createElement('li');
-      item.innerHTML = 'None... yet.';
+      const item = document.createElement("li");
+      item.innerHTML = "None... yet.";
       list.appendChild(item);
     }
     return list;
   }
-  window.addEventListener('load', async () => {
+  window.addEventListener("load", async () => {
     await getEndedGames();
     window.setInterval(async () => {
       await getEndedGames();
